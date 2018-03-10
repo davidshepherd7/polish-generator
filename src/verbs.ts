@@ -11,7 +11,7 @@ export abstract class Verb implements Thingy {
             new CzytacVerb('czytać', 'read'),
             new PisacVerb('pisać', 'write'),
             new MowicVerb('mowić', 'speak'),
-            new UczycVerb('uczyć', 'teach (alt. learn)'),
+            new UczycVerb('uczyć', 'teach'),
         ]
         return randomElement(words)
     }

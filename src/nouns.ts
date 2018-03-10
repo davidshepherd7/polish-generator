@@ -11,7 +11,7 @@ interface INoun {
 export abstract class NounPhrase implements INoun, Thingy {
     abstract get gender(): Gender;
     abstract get nounType(): NounType;
-    abstract render(): string
+    abstract render(grammaticalCase?: Case): string
     abstract get translation(): string
 
     static generate(): NounPhrase & INoun & Thingy {
@@ -23,14 +23,14 @@ export abstract class NounPhrase implements INoun, Thingy {
             return Pronoun.generate()
         }
         else if (x === 2) {
-            return ImproperNounPhrase.generate()
+            return StandardNounPhrase.generate()
         }
         throw new Error('never get here')
     }
 }
 
 
-export class Noun implements Thingy, INoun {
+class Noun implements Thingy, INoun {
     gender: Gender
     nounType: NounType = 'on';
 
@@ -45,13 +45,38 @@ export class Noun implements Thingy, INoun {
             this.gender = this.pickGender(word)
     }
 
-    render(grammaticalCase: Case = 'nominative') {
-        if (grammaticalCase === 'nominative') {
+    render(grammaticalCase: Case = 'nom'): string {
+        if (grammaticalCase === 'nom') {
             return this.word
         }
-        else {
-            throw new Error(`Unknown case ${grammaticalCase}`)
+        else if (grammaticalCase === 'acc') {
+            if (this.gender === 'neut')
+                return this.word
+
+            // Fem (and some weird masc words)
+            else if (_.endsWith(this.word, 'a'))
+                return chopSuffix(this.word, 'a') + 'ę'
+
+            // Masc
+            else if (_.endsWith(this.word, 't'))
+                return this.word + 'a'
+            else if (_.endsWith(this.word, 'ies'))
+                return chopSuffix(this.word, 'ies') + 'sa'
+            else if (_.endsWith(this.word, 'k'))
+                return this.word + 'a'
+            else if (_.endsWith(this.word, 'l'))
+                return this.word
+            else if (_.endsWith(this.word, 'ł'))
+                return this.word + 'y'
+            else if (_.endsWith(this.word, 'g'))
+                return this.word
+
+            // Most irregular examples seem to be just the normal word
+            else
+                return this.word
         }
+
+        throw new Error(`Unknown case ${grammaticalCase}`)
     }
 
     private pickGender(word: string): Gender {
@@ -101,7 +126,7 @@ export class Noun implements Thingy, INoun {
 }
 
 
-export class Adjective implements Thingy {
+class Adjective implements Thingy {
     constructor(
         public mascWord: string,
         public translation: string,
@@ -123,7 +148,7 @@ export class Adjective implements Thingy {
 
             new Adjective('smaczny', 'tasty'),
 
-            new Adjective('żielony', 'green'),
+            new Adjective('zielony', 'green'),
             new Adjective('czarny', 'black'),
             new Adjective('żółty', 'yellow'),
             new Adjective('czerwony', 'red'),
@@ -168,9 +193,9 @@ export class Adjective implements Thingy {
 }
 
 
-export class Pronoun extends NounPhrase implements Thingy, INoun {
+class Pronoun extends NounPhrase implements Thingy, INoun {
     constructor(
-        private pronoun: string,
+        private pronounCases: { [c: string]: string },
         public translation: string,
         public gender: Gender,
         public nounType: NounType
@@ -178,28 +203,32 @@ export class Pronoun extends NounPhrase implements Thingy, INoun {
         super()
     }
 
-    render() {
-        return this.pronoun
+    render(grammaticalCase: Case = 'nom'): string {
+        const x: string | undefined = this.pronounCases[grammaticalCase]
+        if (!x)
+            throw new Error(`Unknown case ${grammaticalCase}`)
+        return x
     }
 
     static generate(): Pronoun {
         const words = [
             // TODO: not sure about these genders...
-            new Pronoun('on', 'he', 'masc', 'on'),
-            new Pronoun('ona', 'she', 'fem', 'on'),
-            new Pronoun('one', 'they (non-masc.)', 'fem', 'oni'),
-            new Pronoun('oni', 'they (any-masc.)', 'masc', 'oni'),
-            new Pronoun('to', 'it', 'neut', 'on'),
-            new Pronoun('ja', 'I', 'neut', 'ja'),
-            new Pronoun('ty', 'you (sing.)', 'neut', 'ty'),
-            new Pronoun('wy', 'you (pl.)', 'neut', 'wy'),
+            new Pronoun({ 'nom': 'on', 'acc': 'jego' }, 'he', 'masc', 'on'),
+            new Pronoun({ 'nom': 'ona', 'acc': 'ją' }, 'she', 'fem', 'on'),
+            new Pronoun({ 'nom': 'one', 'acc': 'je' }, 'they (non-masc.)', 'fem', 'oni'),
+            new Pronoun({ 'nom': 'oni', 'acc': 'ich' }, 'they (any-masc.)', 'masc', 'oni'),
+            new Pronoun({ 'nom': 'ono', 'acc': 'je' }, 'ono', 'neut', 'on'),
+            new Pronoun({ 'nom': 'ja', 'acc': 'mnie' }, 'I', 'neut', 'ja'),
+            new Pronoun({ 'nom': 'ty', 'acc': 'ciebie' }, 'you (sing.)', 'neut', 'ty'),
+            new Pronoun({ 'nom': 'wy', 'acc': 'was' }, 'you (pl.)', 'neut', 'wy'),
+            new Pronoun({ 'nom': 'my', 'acc': 'nas' }, 'we', 'neut', 'my'),
         ]
         return randomElement(words)
     }
 }
 
 
-export class Name extends NounPhrase implements Thingy, INoun {
+class Name extends NounPhrase implements Thingy, INoun {
     nounType: NounType = 'on'
 
     constructor(
@@ -213,8 +242,16 @@ export class Name extends NounPhrase implements Thingy, INoun {
         return this.name
     }
 
-    render() {
-        return this.name
+    render(grammaticalCase: Case = 'nom') {
+        if (grammaticalCase === 'nom') {
+            return this.name
+        }
+        else if (grammaticalCase === 'acc') {
+            return this.name
+        }
+        else {
+            throw new Error(`Unknown case ${grammaticalCase}`)
+        }
     }
 
     static generate(): Name {
@@ -228,7 +265,7 @@ export class Name extends NounPhrase implements Thingy, INoun {
 }
 
 
-export class ImproperNounPhrase extends NounPhrase implements Thingy, INoun {
+class StandardNounPhrase extends NounPhrase implements Thingy, INoun {
     constructor(
         private descriptiveAdjectives: Adjective[],
         private noun: Noun,
@@ -236,10 +273,10 @@ export class ImproperNounPhrase extends NounPhrase implements Thingy, INoun {
         super()
     }
 
-    render() {
+    render(grammaticalCase: Case = 'nom') {
         return [
             ...this.descriptiveAdjectives.map(a => a.genderedString(this.noun.gender)),
-            this.noun.render()
+            this.noun.render(grammaticalCase)
         ].join(' ')
     }
 
@@ -258,10 +295,10 @@ export class ImproperNounPhrase extends NounPhrase implements Thingy, INoun {
         return this.noun.nounType
     }
 
-    static generate(): ImproperNounPhrase {
+    static generate(): StandardNounPhrase {
         const nAdjectives = _.random(0, 2)
 
-        return new ImproperNounPhrase(
+        return new StandardNounPhrase(
             _.times(nAdjectives, () => Adjective.generate()),
             Noun.generate(),
         )

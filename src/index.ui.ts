@@ -1,7 +1,7 @@
 import * as _ from 'lodash'
 import { NounPhrase } from './nouns'
 import { Verb } from './verbs'
-import { NominativePhrase, Sentence } from './phrases'
+import { Sentence } from './phrases'
 
 declare const document: Document
 

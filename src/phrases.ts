@@ -3,10 +3,11 @@ import { NounPhrase } from './nouns'
 import { Verb } from './verbs'
 import _ from 'lodash';
 
+type Phrase = NominativePhrase | SubjectObjectPhrase
 
 export class Sentence implements Thingy {
     constructor(
-        private phrase: NominativePhrase,
+        private phrase: Phrase,
     ) {
     }
 
@@ -19,11 +20,16 @@ export class Sentence implements Thingy {
     }
 
     static generate() {
-        return new Sentence(NominativePhrase.generate())
+        const phrase = randomElement([
+            () => NominativePhrase.generate(),
+            () => SubjectObjectPhrase.generate()
+        ])()
+        return new Sentence(phrase)
     }
 }
 
-export class NominativePhrase implements Thingy {
+
+class NominativePhrase implements Thingy {
 
     constructor(
         private nounPhrase: NounPhrase,
@@ -49,6 +55,40 @@ export class NominativePhrase implements Thingy {
         return new NominativePhrase(
             NounPhrase.generate(),
             Verb.generate(),
+        )
+    }
+}
+
+
+class SubjectObjectPhrase implements Thingy {
+    constructor(
+        private subject: NounPhrase,
+        private verb: Verb,
+        private objectP: NounPhrase,
+    ) {
+    }
+
+    render(): string {
+        return [
+            this.subject.render('nom'),
+            this.verb.render(this.subject.nounType),
+            this.objectP.render('acc'),
+        ].join(' ')
+    }
+
+    get translation() {
+        return [
+            this.subject.translation,
+            this.verb.translation,
+            this.objectP.translation,
+        ].join(' ')
+    }
+
+    static generate(): SubjectObjectPhrase {
+        return new SubjectObjectPhrase(
+            NounPhrase.generate(),
+            Verb.generate(),
+            NounPhrase.generate(),
         )
     }
 }

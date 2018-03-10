@@ -82,7 +82,7 @@ var NounPhrase = /** @class */ (function () {
             return Pronoun.generate();
         }
         else if (x === 2) {
-            return ImproperNounPhrase.generate();
+            return StandardNounPhrase.generate();
         }
         throw new Error('never get here');
     };
@@ -100,13 +100,31 @@ var Noun = /** @class */ (function () {
             this.gender = this.pickGender(word);
     }
     Noun.prototype.render = function (grammaticalCase) {
-        if (grammaticalCase === void 0) { grammaticalCase = 'nominative'; }
-        if (grammaticalCase === 'nominative') {
+        if (grammaticalCase === void 0) { grammaticalCase = 'nom'; }
+        if (grammaticalCase === 'nom') {
             return this.word;
         }
-        else {
-            throw new Error("Unknown case " + grammaticalCase);
+        else if (grammaticalCase === 'acc') {
+            if (this.gender === 'neut')
+                return this.word;
+            else if (_.endsWith(this.word, 'a'))
+                return core_1.chopSuffix(this.word, 'a') + 'ę';
+            else if (_.endsWith(this.word, 't'))
+                return this.word + 'a';
+            else if (_.endsWith(this.word, 'ies'))
+                return core_1.chopSuffix(this.word, 'ies') + 'sa';
+            else if (_.endsWith(this.word, 'k'))
+                return this.word + 'a';
+            else if (_.endsWith(this.word, 'l'))
+                return this.word;
+            else if (_.endsWith(this.word, 'ł'))
+                return this.word + 'y';
+            else if (_.endsWith(this.word, 'g'))
+                return this.word;
+            else
+                return this.word;
         }
+        throw new Error("Unknown case " + grammaticalCase);
     };
     Noun.prototype.pickGender = function (word) {
         if (_.endsWith(word, 'a'))
@@ -146,7 +164,6 @@ var Noun = /** @class */ (function () {
     };
     return Noun;
 }());
-exports.Noun = Noun;
 var Adjective = /** @class */ (function () {
     function Adjective(mascWord, translation) {
         this.mascWord = mascWord;
@@ -163,7 +180,7 @@ var Adjective = /** @class */ (function () {
             new Adjective('drogi', 'expensive'),
             new Adjective('tani', 'cheap'),
             new Adjective('smaczny', 'tasty'),
-            new Adjective('żielony', 'green'),
+            new Adjective('zielony', 'green'),
             new Adjective('czarny', 'black'),
             new Adjective('żółty', 'yellow'),
             new Adjective('czerwony', 'red'),
@@ -205,37 +222,40 @@ var Adjective = /** @class */ (function () {
     };
     return Adjective;
 }());
-exports.Adjective = Adjective;
 var Pronoun = /** @class */ (function (_super) {
     __extends(Pronoun, _super);
-    function Pronoun(pronoun, translation, gender, nounType) {
+    function Pronoun(pronounCases, translation, gender, nounType) {
         var _this = _super.call(this) || this;
-        _this.pronoun = pronoun;
+        _this.pronounCases = pronounCases;
         _this.translation = translation;
         _this.gender = gender;
         _this.nounType = nounType;
         return _this;
     }
-    Pronoun.prototype.render = function () {
-        return this.pronoun;
+    Pronoun.prototype.render = function (grammaticalCase) {
+        if (grammaticalCase === void 0) { grammaticalCase = 'nom'; }
+        var x = this.pronounCases[grammaticalCase];
+        if (!x)
+            throw new Error("Unknown case " + grammaticalCase);
+        return x;
     };
     Pronoun.generate = function () {
         var words = [
             // TODO: not sure about these genders...
-            new Pronoun('on', 'he', 'masc', 'on'),
-            new Pronoun('ona', 'she', 'fem', 'on'),
-            new Pronoun('one', 'they (non-masc.)', 'fem', 'oni'),
-            new Pronoun('oni', 'they (any-masc.)', 'masc', 'oni'),
-            new Pronoun('to', 'it', 'neut', 'on'),
-            new Pronoun('ja', 'I', 'neut', 'ja'),
-            new Pronoun('ty', 'you (sing.)', 'neut', 'ty'),
-            new Pronoun('wy', 'you (pl.)', 'neut', 'wy'),
+            new Pronoun({ 'nom': 'on', 'acc': 'jego' }, 'he', 'masc', 'on'),
+            new Pronoun({ 'nom': 'ona', 'acc': 'ją' }, 'she', 'fem', 'on'),
+            new Pronoun({ 'nom': 'one', 'acc': 'je' }, 'they (non-masc.)', 'fem', 'oni'),
+            new Pronoun({ 'nom': 'oni', 'acc': 'ich' }, 'they (any-masc.)', 'masc', 'oni'),
+            new Pronoun({ 'nom': 'ono', 'acc': 'je' }, 'ono', 'neut', 'on'),
+            new Pronoun({ 'nom': 'ja', 'acc': 'mnie' }, 'I', 'neut', 'ja'),
+            new Pronoun({ 'nom': 'ty', 'acc': 'ciebie' }, 'you (sing.)', 'neut', 'ty'),
+            new Pronoun({ 'nom': 'wy', 'acc': 'was' }, 'you (pl.)', 'neut', 'wy'),
+            new Pronoun({ 'nom': 'my', 'acc': 'nas' }, 'we', 'neut', 'my'),
         ];
         return core_1.randomElement(words);
     };
     return Pronoun;
 }(NounPhrase));
-exports.Pronoun = Pronoun;
 var Name = /** @class */ (function (_super) {
     __extends(Name, _super);
     function Name(name, gender) {
@@ -252,8 +272,17 @@ var Name = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Name.prototype.render = function () {
-        return this.name;
+    Name.prototype.render = function (grammaticalCase) {
+        if (grammaticalCase === void 0) { grammaticalCase = 'nom'; }
+        if (grammaticalCase === 'nom') {
+            return this.name;
+        }
+        else if (grammaticalCase === 'acc') {
+            return this.name;
+        }
+        else {
+            throw new Error("Unknown case " + grammaticalCase);
+        }
     };
     Name.generate = function () {
         var words = [
@@ -265,22 +294,22 @@ var Name = /** @class */ (function (_super) {
     };
     return Name;
 }(NounPhrase));
-exports.Name = Name;
-var ImproperNounPhrase = /** @class */ (function (_super) {
-    __extends(ImproperNounPhrase, _super);
-    function ImproperNounPhrase(descriptiveAdjectives, noun) {
+var StandardNounPhrase = /** @class */ (function (_super) {
+    __extends(StandardNounPhrase, _super);
+    function StandardNounPhrase(descriptiveAdjectives, noun) {
         var _this = _super.call(this) || this;
         _this.descriptiveAdjectives = descriptiveAdjectives;
         _this.noun = noun;
         return _this;
     }
-    ImproperNounPhrase.prototype.render = function () {
+    StandardNounPhrase.prototype.render = function (grammaticalCase) {
         var _this = this;
+        if (grammaticalCase === void 0) { grammaticalCase = 'nom'; }
         return this.descriptiveAdjectives.map(function (a) { return a.genderedString(_this.noun.gender); }).concat([
-            this.noun.render()
+            this.noun.render(grammaticalCase)
         ]).join(' ');
     };
-    Object.defineProperty(ImproperNounPhrase.prototype, "translation", {
+    Object.defineProperty(StandardNounPhrase.prototype, "translation", {
         get: function () {
             return this.descriptiveAdjectives.map(function (a) { return a.translation; }).concat([
                 this.noun.translation,
@@ -289,27 +318,26 @@ var ImproperNounPhrase = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(ImproperNounPhrase.prototype, "gender", {
+    Object.defineProperty(StandardNounPhrase.prototype, "gender", {
         get: function () {
             return this.noun.gender;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(ImproperNounPhrase.prototype, "nounType", {
+    Object.defineProperty(StandardNounPhrase.prototype, "nounType", {
         get: function () {
             return this.noun.nounType;
         },
         enumerable: true,
         configurable: true
     });
-    ImproperNounPhrase.generate = function () {
+    StandardNounPhrase.generate = function () {
         var nAdjectives = _.random(0, 2);
-        return new ImproperNounPhrase(_.times(nAdjectives, function () { return Adjective.generate(); }), Noun.generate());
+        return new StandardNounPhrase(_.times(nAdjectives, function () { return Adjective.generate(); }), Noun.generate());
     };
-    return ImproperNounPhrase;
+    return StandardNounPhrase;
 }(NounPhrase));
-exports.ImproperNounPhrase = ImproperNounPhrase;
 
 },{"./core":1,"lodash":6}],4:[function(require,module,exports){
 "use strict";
@@ -317,6 +345,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 }
 Object.defineProperty(exports, "__esModule", { value: true });
+var core_1 = require("./core");
 var nouns_1 = require("./nouns");
 var verbs_1 = require("./verbs");
 var lodash_1 = __importDefault(require("lodash"));
@@ -335,7 +364,11 @@ var Sentence = /** @class */ (function () {
         configurable: true
     });
     Sentence.generate = function () {
-        return new Sentence(NominativePhrase.generate());
+        var phrase = core_1.randomElement([
+            function () { return NominativePhrase.generate(); },
+            function () { return SubjectObjectPhrase.generate(); }
+        ])();
+        return new Sentence(phrase);
     };
     return Sentence;
 }());
@@ -366,9 +399,37 @@ var NominativePhrase = /** @class */ (function () {
     };
     return NominativePhrase;
 }());
-exports.NominativePhrase = NominativePhrase;
+var SubjectObjectPhrase = /** @class */ (function () {
+    function SubjectObjectPhrase(subject, verb, objectP) {
+        this.subject = subject;
+        this.verb = verb;
+        this.objectP = objectP;
+    }
+    SubjectObjectPhrase.prototype.render = function () {
+        return [
+            this.subject.render('nom'),
+            this.verb.render(this.subject.nounType),
+            this.objectP.render('acc'),
+        ].join(' ');
+    };
+    Object.defineProperty(SubjectObjectPhrase.prototype, "translation", {
+        get: function () {
+            return [
+                this.subject.translation,
+                this.verb.translation,
+                this.objectP.translation,
+            ].join(' ');
+        },
+        enumerable: true,
+        configurable: true
+    });
+    SubjectObjectPhrase.generate = function () {
+        return new SubjectObjectPhrase(nouns_1.NounPhrase.generate(), verbs_1.Verb.generate(), nouns_1.NounPhrase.generate());
+    };
+    return SubjectObjectPhrase;
+}());
 
-},{"./nouns":3,"./verbs":5,"lodash":6}],5:[function(require,module,exports){
+},{"./core":1,"./nouns":3,"./verbs":5,"lodash":6}],5:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -390,7 +451,7 @@ var Verb = /** @class */ (function () {
             new CzytacVerb('czytać', 'read'),
             new PisacVerb('pisać', 'write'),
             new MowicVerb('mowić', 'speak'),
-            new UczycVerb('uczyć', 'teach (alt. learn)'),
+            new UczycVerb('uczyć', 'teach'),
         ];
         return core_1.randomElement(words);
     };
