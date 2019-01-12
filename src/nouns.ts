@@ -13,6 +13,21 @@ function stem(word: string) {
     return _.trimEnd(word, 'aeiouąę')
 }
 
+function stripIes(word: string) {
+    if (_.endsWith(word, 'ek')) {
+        return chopSuffix(word, 'ek') + 'k'
+    }
+    else if (_.endsWith(word, 'ies')) {
+        return chopSuffix(word, 'ies') + 's'
+    }
+    else if (_.endsWith(word, 'iec')) {
+        return chopSuffix(word, 'iec') + 'c'
+    }
+    else {
+        return word
+    }
+}
+
 function mascFemAccusative(word: string) {
     // some weird masc words act like feminine ones
     if (_.endsWith(word, 'a'))
@@ -21,8 +36,10 @@ function mascFemAccusative(word: string) {
     // Masc
     else if (_.endsWith(word, 't'))
         return word + 'a'
-    else if (_.endsWith(word, 'ies'))
-        return chopSuffix(word, 'ies') + 'sa'
+    else if (_.endsWith(word, 's'))
+        return word + 'a'
+    else if (_.endsWith(word, 'c'))
+        return word + 'a'
     else if (_.endsWith(word, 'k'))
         return word + 'a'
     else if (_.endsWith(word, 'l'))
@@ -57,6 +74,8 @@ class Noun {
             new FeminineNoun('kobieta', 'woman'),
             new MascAnmiateNoun('mężczyzna', 'man'),
             new NeuterNoun('dziecko', 'child'),
+            new MascAnmiateNoun('pies', 'dog'),
+            new MascAnmiateNoun('kot', 'cat'),
 
             new MascInanmiateNoun('stół', 'table'),
             new NeuterNoun('łóżko', 'bed'),
@@ -78,6 +97,7 @@ class Noun {
             new MascInanmiateNoun('dworzec', 'station'),
             new FeminineNoun('poczta', 'post office'),
             new MascInanmiateNoun('hotel', 'hotel'),
+            new NeuterNoun('muzeum', 'museum'),
 
             new FeminineNoun('herbata', 'tea'),
             new FeminineNoun('kawa', 'coffee'),
@@ -99,6 +119,9 @@ class NeuterNoun implements INoun {
     }
 
     render(grammaticalCase: Case): string {
+        if (_.endsWith('um'))
+            return this.word;
+
         if (grammaticalCase === 'nom') {
             return this.word
         }
@@ -159,10 +182,12 @@ class MascAnmiateNoun implements INoun {
             return this.word
         }
         else if (grammaticalCase === 'acc') {
-            return mascFemAccusative(this.word)
+            const withoutIes = stripIes(this.word)
+            return mascFemAccusative(withoutIes)
         }
         else if (grammaticalCase === 'gen') {
-            return this.word + 'a'
+            const withoutIes = stripIes(this.word)
+            return withoutIes + 'a'
         }
 
         return assertNever(grammaticalCase);
@@ -185,10 +210,12 @@ class MascInanmiateNoun implements INoun {
             return this.word
         }
         else if (grammaticalCase === 'acc') {
-            return mascFemAccusative(this.word)
+            const withoutIes = stripIes(this.word)
+            return mascFemAccusative(withoutIes)
         }
         else if (grammaticalCase === 'gen') {
-            return this.word + 'u'
+            const withoutIes = stripIes(this.word)
+            return withoutIes + 'u'
         }
 
         return assertNever(grammaticalCase);
