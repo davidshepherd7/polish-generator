@@ -9,6 +9,10 @@ interface INoun {
     nounType: NounType
 }
 
+function stem(word: string) {
+    return _.trimEnd(word, 'aeiouąę')
+}
+
 function mascFemAccusative(word: string) {
     // some weird masc words act like feminine ones
     if (_.endsWith(word, 'a'))
@@ -101,6 +105,9 @@ class NeuterNoun implements INoun {
         else if (grammaticalCase === 'acc') {
             return this.word
         }
+        else if (grammaticalCase === 'gen') {
+            return stem(this.word) + 'a'
+        }
 
         return assertNever(grammaticalCase);
     }
@@ -122,6 +129,15 @@ class FeminineNoun implements INoun {
         }
         else if (grammaticalCase === 'acc') {
             return mascFemAccusative(this.word)
+        }
+        else if (grammaticalCase === 'gen') {
+            const s = stem(this.word)
+            if (_.endsWith(s, 'k') || _.endsWith(s, 'g')) {
+                return s + 'i'
+            }
+            else {
+                return s + 'y'
+            }
         }
 
         return assertNever(grammaticalCase);
@@ -145,6 +161,9 @@ class MascAnmiateNoun implements INoun {
         else if (grammaticalCase === 'acc') {
             return mascFemAccusative(this.word)
         }
+        else if (grammaticalCase === 'gen') {
+            return this.word + 'a'
+        }
 
         return assertNever(grammaticalCase);
     }
@@ -167,6 +186,9 @@ class MascInanmiateNoun implements INoun {
         }
         else if (grammaticalCase === 'acc') {
             return mascFemAccusative(this.word)
+        }
+        else if (grammaticalCase === 'gen') {
+            return this.word + 'u'
         }
 
         return assertNever(grammaticalCase);
@@ -261,15 +283,15 @@ class Pronoun extends NounPhrase implements INoun {
     static generate(): Pronoun {
         const words = [
             // TODO: not sure about these genders...
-            new Pronoun({ 'nom': 'on', 'acc': 'jego' }, 'he', 'masc', 'on'),
-            new Pronoun({ 'nom': 'ona', 'acc': 'ją' }, 'she', 'fem', 'on'),
-            new Pronoun({ 'nom': 'one', 'acc': 'je' }, 'they (non-masc.)', 'fem', 'oni'),
-            new Pronoun({ 'nom': 'oni', 'acc': 'ich' }, 'they (any-masc.)', 'masc', 'oni'),
-            new Pronoun({ 'nom': 'ono', 'acc': 'je' }, 'ono', 'neut', 'on'),
-            new Pronoun({ 'nom': 'ja', 'acc': 'mnie' }, 'I', 'neut', 'ja'),
-            new Pronoun({ 'nom': 'ty', 'acc': 'ciebie' }, 'you (sing.)', 'neut', 'ty'),
-            new Pronoun({ 'nom': 'wy', 'acc': 'was' }, 'you (pl.)', 'neut', 'wy'),
-            new Pronoun({ 'nom': 'my', 'acc': 'nas' }, 'we', 'neut', 'my'),
+            new Pronoun({ 'nom': 'on', 'acc': 'jego', 'gen': 'jego' }, 'he', 'masc', 'on'),
+            new Pronoun({ 'nom': 'ona', 'acc': 'ją', 'gen': 'jej' }, 'she', 'fem', 'on'),
+            new Pronoun({ 'nom': 'one', 'acc': 'je', 'gen': 'ich' }, 'they (non-masc.)', 'fem', 'oni'),
+            new Pronoun({ 'nom': 'oni', 'acc': 'ich', 'gen': 'ich' }, 'they (any-masc.)', 'masc', 'oni'),
+            new Pronoun({ 'nom': 'ono', 'acc': 'je', 'gen': 'jego' }, 'it', 'neut', 'on'),
+            new Pronoun({ 'nom': 'ja', 'acc': 'mnie', 'gen': 'mnie' }, 'I', 'neut', 'ja'),
+            new Pronoun({ 'nom': 'ty', 'acc': 'ciebie', 'gen': 'ciebie' }, 'you (sing.)', 'neut', 'ty'),
+            new Pronoun({ 'nom': 'wy', 'acc': 'was', 'gen': 'was' }, 'you (pl.)', 'neut', 'wy'),
+            new Pronoun({ 'nom': 'my', 'acc': 'nas', 'gen': 'nas' }, 'we', 'neut', 'my'),
         ]
         return assertNotNil(_.sample(words))
     }
@@ -297,6 +319,9 @@ class Name extends NounPhrase implements INoun {
         else if (grammaticalCase === 'acc') {
             return this.name
         }
+        else if (grammaticalCase === 'gen') {
+            return `Genitive(${this.name})`
+        }
         else {
             return assertNever(grammaticalCase);
         }
@@ -312,11 +337,33 @@ class Name extends NounPhrase implements INoun {
     }
 }
 
+class Possesive {
+    constructor(
+        private owner: INoun,
+    ) {
+    }
+
+    render() {
+        return this.owner.render('gen')
+    }
+
+    get translation() {
+        return this.owner.translation + "'s"
+    }
+
+    static generate() {
+        const factory = assertNotNil(_.sample([Name.generate, Pronoun.generate]));
+        const owner = factory()
+        return new Possesive(owner);
+    }
+}
+
 
 class StandardNounPhrase extends NounPhrase implements INoun {
     constructor(
         private descriptiveAdjectives: Adjective[],
         private noun: INoun,
+        private possesive: Possesive | null = null
     ) {
         super()
     }
@@ -324,12 +371,14 @@ class StandardNounPhrase extends NounPhrase implements INoun {
     render(grammaticalCase: Case) {
         return [
             ...this.descriptiveAdjectives.map(a => a.genderedString(this.noun.gender)),
-            this.noun.render(grammaticalCase)
+            this.noun.render(grammaticalCase),
+            ...(this.possesive ? [this.possesive.render()] : [])
         ].join(' ')
     }
 
     get translation() {
         return [
+            ...(this.possesive ? [this.possesive.translation] : []),
             ...this.descriptiveAdjectives.map(a => a.translation),
             this.noun.translation,
         ].join(' ')
@@ -346,9 +395,12 @@ class StandardNounPhrase extends NounPhrase implements INoun {
     static generate(): StandardNounPhrase {
         const nAdjectives = _.random(0, 2)
 
+        const withPossessive = _.random(0, 4) == 0
+
         return new StandardNounPhrase(
             _.times(nAdjectives, () => Adjective.generate()),
             Noun.generate(),
+            withPossessive ? Possesive.generate() : null,
         )
     }
 }

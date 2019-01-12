@@ -6,7 +6,7 @@ export interface Renderable {
 }
 
 export type Gender = 'masc' | 'fem' | 'neut'
-export type Case = 'nom' | 'acc'
+export type Case = 'nom' | 'acc' | 'gen'
 
 export type NounType = 'ja' | 'ty' | 'wy' | 'my' | 'oni' | 'on'
 
