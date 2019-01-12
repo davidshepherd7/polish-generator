@@ -1,5 +1,4 @@
 import { NounType, chopSuffix, assertNotNil } from './core'
-import { NounPhrase } from './nouns'
 import _ from 'lodash';
 
 export abstract class Verb {

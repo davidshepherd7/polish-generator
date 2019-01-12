@@ -1,5 +1,4 @@
 import * as _ from 'lodash'
-import { NounPhrase } from './nouns'
 import { Verb } from './verbs'
 import { Sentence } from './phrases'
 

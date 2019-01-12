@@ -1,13 +1,6 @@
 import * as _ from 'lodash'
-import { Renderable, Gender, chopSuffix, Case, NounType, assertNever, assertNotNil } from './core'
+import { Renderable, Gender, chopSuffix, Case, NounType, assertNever, assertNotNil, INoun } from './core'
 
-
-interface INoun {
-    render(grammaticalCase: Case): string
-    translation: string
-    gender: Gender
-    nounType: NounType
-}
 
 function stem(word: string) {
     return _.trimEnd(word, 'aeiouąę')
@@ -55,23 +48,10 @@ function mascFemAccusative(word: string) {
 }
 
 
-export abstract class NounPhrase implements INoun {
-    abstract get gender(): Gender
-    abstract get nounType(): NounType
-    abstract render(grammaticalCase: Case): string
-    abstract get translation(): string
-
-    static generate(): NounPhrase {
-        const factory = assertNotNil(_.sample([Name.generate, Pronoun.generate, StandardNounPhrase.generate]))
-        return factory();
-    }
-}
-
-
 // TODO: litre of, bottle of, packet of, etc
 
 
-class Noun {
+export class Noun {
     static generate(): INoun {
         const nouns = [
             new FeminineNoun('kobieta', 'woman'),
@@ -226,82 +206,15 @@ class MascInanmiateNoun implements INoun {
 }
 
 
-class Adjective {
-    constructor(
-        public mascWord: string,
-        public translation: string,
-    ) {
-    }
-
-    render() {
-        return this.genderedString('masc')
-    }
-
-    static generate(): Adjective {
-        const words = [
-            new Adjective('mały', 'small'),
-            new Adjective('długi', 'big'),
-            new Adjective('kolorowy', 'colourful'),
-
-            new Adjective('drogi', 'expensive'),
-            new Adjective('tani', 'cheap'),
-
-            new Adjective('smaczny', 'tasty'),
-
-            new Adjective('zielony', 'green'),
-            new Adjective('czarny', 'black'),
-            new Adjective('żółty', 'yellow'),
-            new Adjective('czerwony', 'red'),
-            new Adjective('niebiesky', 'blue'),
-            new Adjective('brązowy', 'brown'),
-            new Adjective('fioletowy', 'purple'),
-            new Adjective('pomaranczowy', 'orange'),
-        ]
-        return assertNotNil(_.sample(words))
-    }
-
-    genderedString(gender: Gender): string {
-        // TODO: cases other than nominative!
-        let suffix, stem
-        if (_.endsWith(this.mascWord, 'y')) {
-            stem = chopSuffix(this.mascWord, 'y')
-            if (gender === 'masc')
-                suffix = 'y'
-            else if (gender === 'fem')
-                suffix = 'a'
-            else if (gender === 'neut')
-                suffix = 'e'
-            else
-                throw new Error(`bad gender ${gender}`)
-        }
-        else if (_.endsWith(this.mascWord, 'i')) {
-            stem = chopSuffix(this.mascWord, 'i')
-            if (gender === 'masc')
-                suffix = 'i'
-            else if (gender === 'fem')
-                suffix = 'a'
-            else if (gender === 'neut')
-                suffix = 'ie'
-            else
-                throw new Error(`bad gender ${gender}`)
-        }
-        else {
-            throw new Error(`unknown masculine adjective type ${this.mascWord}`)
-        }
-
-        return stem + suffix
-    }
-}
 
 
-class Pronoun extends NounPhrase implements INoun {
+export class Pronoun implements INoun {
     constructor(
         private pronounCases: { [c: string]: string },
         public translation: string,
         public gender: Gender,
         public nounType: NounType
     ) {
-        super()
     }
 
     render(grammaticalCase: Case): string {
@@ -329,14 +242,13 @@ class Pronoun extends NounPhrase implements INoun {
 }
 
 
-class Name extends NounPhrase implements INoun {
+export class Name implements INoun {
     nounType: NounType = 'on'
 
     constructor(
         private name: string,
         public gender: Gender,
     ) {
-        super()
     }
 
     get translation() {
@@ -365,74 +277,5 @@ class Name extends NounPhrase implements INoun {
             new Name('Lech', 'masc'),
         ]
         return assertNotNil(_.sample(words))
-    }
-}
-
-class Possesive {
-    constructor(
-        private owner: INoun,
-    ) {
-    }
-
-    render() {
-        return this.owner.render('gen')
-    }
-
-    get translation() {
-        return this.owner.translation + "'s"
-    }
-
-    static generate() {
-        const factory = assertNotNil(_.sample([Name.generate, Pronoun.generate]));
-        const owner = factory()
-        return new Possesive(owner);
-    }
-}
-
-// TODO: quantities
-
-class StandardNounPhrase extends NounPhrase implements INoun {
-    constructor(
-        private descriptiveAdjectives: Adjective[],
-        private noun: INoun,
-        private possesive: Possesive | null = null
-    ) {
-        super()
-    }
-
-    render(grammaticalCase: Case) {
-        return [
-            ...this.descriptiveAdjectives.map(a => a.genderedString(this.noun.gender)),
-            this.noun.render(grammaticalCase),
-            ...(this.possesive ? [this.possesive.render()] : [])
-        ].join(' ')
-    }
-
-    get translation() {
-        return [
-            ...(this.possesive ? [this.possesive.translation] : []),
-            ...this.descriptiveAdjectives.map(a => a.translation),
-            this.noun.translation,
-        ].join(' ')
-    }
-
-    get gender() {
-        return this.noun.gender
-    }
-
-    get nounType() {
-        return this.noun.nounType
-    }
-
-    static generate(): StandardNounPhrase {
-        const nAdjectives = _.random(0, 2)
-
-        const withPossessive = _.random(0, 4) == 0
-
-        return new StandardNounPhrase(
-            _.times(nAdjectives, () => Adjective.generate()),
-            Noun.generate(),
-            withPossessive ? Possesive.generate() : null,
-        )
     }
 }

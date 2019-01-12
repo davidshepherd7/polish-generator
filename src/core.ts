@@ -27,3 +27,10 @@ export function assertNotNil<T>(x: T | null | undefined): T {
         throw new Error("Unexpected nil")
     return x
 }
+
+export interface INoun {
+    render(grammaticalCase: Case): string
+    translation: string
+    gender: Gender
+    nounType: NounType
+}

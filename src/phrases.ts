@@ -1,9 +1,72 @@
-import { Renderable, NounType, chopSuffix, assertNotNil } from './core'
-import { NounPhrase } from './nouns'
+import { Renderable, NounType, chopSuffix, assertNotNil, INoun, Gender, Case } from './core'
 import { Verb } from './verbs'
+import { Adjective, Possesive } from './adjectives'
 import _ from 'lodash';
+import { Noun, Pronoun, Name } from './nouns';
 
 type Phrase = NominativePhrase | SubjectObjectPhrase
+
+// TODO: quantities
+
+
+export abstract class NounPhrase implements INoun {
+    abstract get gender(): Gender
+    abstract get nounType(): NounType
+    abstract render(grammaticalCase: Case): string
+    abstract get translation(): string
+
+    static generate(): NounPhrase {
+        const factory = assertNotNil(_.sample([Name.generate, Pronoun.generate, StandardNounPhrase.generate]))
+        return factory();
+    }
+}
+
+
+class StandardNounPhrase extends NounPhrase implements INoun {
+    constructor(
+        private descriptiveAdjectives: Adjective[],
+        private noun: INoun,
+        private possesive: Possesive | null = null
+    ) {
+        super()
+    }
+
+    render(grammaticalCase: Case) {
+        return [
+            ...this.descriptiveAdjectives.map(a => a.genderedString(this.noun.gender)),
+            this.noun.render(grammaticalCase),
+            ...(this.possesive ? [this.possesive.render()] : [])
+        ].join(' ')
+    }
+
+    get translation() {
+        return [
+            ...(this.possesive ? [this.possesive.translation] : []),
+            ...this.descriptiveAdjectives.map(a => a.translation),
+            this.noun.translation,
+        ].join(' ')
+    }
+
+    get gender() {
+        return this.noun.gender
+    }
+
+    get nounType() {
+        return this.noun.nounType
+    }
+
+    static generate(): StandardNounPhrase {
+        const nAdjectives = _.random(0, 2)
+
+        const withPossessive = _.random(0, 4) == 0
+
+        return new StandardNounPhrase(
+            _.times(nAdjectives, () => Adjective.generate()),
+            Noun.generate(),
+            withPossessive ? Possesive.generate() : null,
+        )
+    }
+}
 
 export class Sentence implements Renderable {
     constructor(
