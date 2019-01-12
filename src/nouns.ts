@@ -1,5 +1,5 @@
 import * as _ from 'lodash'
-import { Thingy, Gender, randomElement, chopSuffix, Case, NounType } from './core'
+import { Renderable, Gender, randomElement, chopSuffix, Case, NounType } from './core'
 
 
 interface INoun {
@@ -128,7 +128,7 @@ class Noun implements INoun {
 }
 
 
-class Adjective implements Thingy {
+class Adjective {
     constructor(
         public mascWord: string,
         public translation: string,

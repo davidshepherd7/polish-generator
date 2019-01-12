@@ -1,11 +1,11 @@
-import { Thingy, randomElement, NounType, chopSuffix } from './core'
+import { Renderable, randomElement, NounType, chopSuffix } from './core'
 import { NounPhrase } from './nouns'
 import { Verb } from './verbs'
 import _ from 'lodash';
 
 type Phrase = NominativePhrase | SubjectObjectPhrase
 
-export class Sentence implements Thingy {
+export class Sentence implements Renderable {
     constructor(
         private phrase: Phrase,
     ) {
@@ -29,7 +29,7 @@ export class Sentence implements Thingy {
 }
 
 
-class NominativePhrase implements Thingy {
+class NominativePhrase implements Renderable {
 
     constructor(
         private nounPhrase: NounPhrase,
@@ -60,7 +60,7 @@ class NominativePhrase implements Thingy {
 }
 
 
-class SubjectObjectPhrase implements Thingy {
+class SubjectObjectPhrase implements Renderable {
     constructor(
         private subject: NounPhrase,
         private verb: Verb,

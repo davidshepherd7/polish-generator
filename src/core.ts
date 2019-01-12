@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 
-export interface Thingy {
+export interface Renderable {
     render(): string
     translation: string
 }

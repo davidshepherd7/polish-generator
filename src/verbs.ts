@@ -1,8 +1,8 @@
 
-import { Thingy, randomElement, NounType, chopSuffix } from './core'
+import { randomElement, NounType, chopSuffix } from './core'
 import { NounPhrase } from './nouns'
 
-export abstract class Verb implements Thingy {
+export abstract class Verb {
     abstract render(nounType?: NounType): string
     abstract get translation(): string
 
