@@ -3,18 +3,20 @@ import { Thingy, Gender, randomElement, chopSuffix, Case, NounType } from './cor
 
 
 interface INoun {
+    render(grammaticalCase: Case): string
+    translation: string
     gender: Gender
     nounType: NounType
 }
 
 
-export abstract class NounPhrase implements INoun, Thingy {
+export abstract class NounPhrase implements INoun {
     abstract get gender(): Gender
     abstract get nounType(): NounType
-    abstract render(grammaticalCase?: Case): string
+    abstract render(grammaticalCase: Case): string
     abstract get translation(): string
 
-    static generate(): NounPhrase & INoun & Thingy {
+    static generate(): NounPhrase {
         const x = _.random(0, 2, false)
         if (x === 0) {
             return Name.generate()
@@ -30,7 +32,7 @@ export abstract class NounPhrase implements INoun, Thingy {
 }
 
 
-class Noun implements Thingy, INoun {
+class Noun implements INoun {
     gender: Gender
     nounType: NounType = 'on'
 
@@ -45,7 +47,7 @@ class Noun implements Thingy, INoun {
             this.gender = this.pickGender(word)
     }
 
-    render(grammaticalCase: Case = 'nom'): string {
+    render(grammaticalCase: Case): string {
         if (grammaticalCase === 'nom') {
             return this.word
         }
@@ -193,7 +195,7 @@ class Adjective implements Thingy {
 }
 
 
-class Pronoun extends NounPhrase implements Thingy, INoun {
+class Pronoun extends NounPhrase implements INoun {
     constructor(
         private pronounCases: { [c: string]: string },
         public translation: string,
@@ -203,7 +205,7 @@ class Pronoun extends NounPhrase implements Thingy, INoun {
         super()
     }
 
-    render(grammaticalCase: Case = 'nom'): string {
+    render(grammaticalCase: Case): string {
         const x: string | undefined = this.pronounCases[grammaticalCase]
         if (!x)
             throw new Error(`Unknown case ${grammaticalCase}`)
@@ -228,7 +230,7 @@ class Pronoun extends NounPhrase implements Thingy, INoun {
 }
 
 
-class Name extends NounPhrase implements Thingy, INoun {
+class Name extends NounPhrase implements INoun {
     nounType: NounType = 'on'
 
     constructor(
@@ -242,7 +244,7 @@ class Name extends NounPhrase implements Thingy, INoun {
         return this.name
     }
 
-    render(grammaticalCase: Case = 'nom') {
+    render(grammaticalCase: Case) {
         if (grammaticalCase === 'nom') {
             return this.name
         }
@@ -265,7 +267,7 @@ class Name extends NounPhrase implements Thingy, INoun {
 }
 
 
-class StandardNounPhrase extends NounPhrase implements Thingy, INoun {
+class StandardNounPhrase extends NounPhrase implements INoun {
     constructor(
         private descriptiveAdjectives: Adjective[],
         private noun: Noun,
@@ -273,7 +275,7 @@ class StandardNounPhrase extends NounPhrase implements Thingy, INoun {
         super()
     }
 
-    render(grammaticalCase: Case = 'nom') {
+    render(grammaticalCase: Case) {
         return [
             ...this.descriptiveAdjectives.map(a => a.genderedString(this.noun.gender)),
             this.noun.render(grammaticalCase)

@@ -39,7 +39,7 @@ class NominativePhrase implements Thingy {
 
     render(): string {
         return [
-            this.nounPhrase.render(),
+            this.nounPhrase.render('nom'),
             this.verb.render(this.nounPhrase.nounType),
         ].join(' ')
     }
