@@ -3,14 +3,14 @@ import { Thingy, Gender, randomElement, chopSuffix, Case, NounType } from './cor
 
 
 interface INoun {
-    gender: Gender;
-    nounType: NounType;
+    gender: Gender
+    nounType: NounType
 }
 
 
 export abstract class NounPhrase implements INoun, Thingy {
-    abstract get gender(): Gender;
-    abstract get nounType(): NounType;
+    abstract get gender(): Gender
+    abstract get nounType(): NounType
     abstract render(grammaticalCase?: Case): string
     abstract get translation(): string
 
@@ -32,7 +32,7 @@ export abstract class NounPhrase implements INoun, Thingy {
 
 class Noun implements Thingy, INoun {
     gender: Gender
-    nounType: NounType = 'on';
+    nounType: NounType = 'on'
 
     constructor(
         public word: string,

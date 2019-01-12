@@ -15,7 +15,7 @@ export function randomElement<T>(list: T[]): T {
 export type Gender = 'masc' | 'fem' | 'neut'
 export type Case = 'nom' | 'acc'
 
-export type NounType = 'ja' | 'ty' | 'wy' | 'my' | 'oni' | 'on';
+export type NounType = 'ja' | 'ty' | 'wy' | 'my' | 'oni' | 'on'
 
 
 export function chopSuffix(word: string, target: string): string {
