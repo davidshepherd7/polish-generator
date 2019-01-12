@@ -17,6 +17,8 @@ export abstract class Verb {
     }
 }
 
+// TODO: adverbs
+
 
 export class CzytacVerb extends Verb {
     constructor(

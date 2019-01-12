@@ -60,6 +60,8 @@ class NominativePhrase implements Renderable {
 }
 
 
+// TODO: negations
+
 class SubjectObjectPhrase implements Renderable {
     constructor(
         private subject: NounPhrase,

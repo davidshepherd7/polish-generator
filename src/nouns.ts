@@ -68,6 +68,9 @@ export abstract class NounPhrase implements INoun {
 }
 
 
+// TODO: litre of, bottle of, packet of, etc
+
+
 class Noun {
     static generate(): INoun {
         const nouns = [
@@ -258,6 +261,7 @@ class Adjective {
     }
 
     genderedString(gender: Gender): string {
+        // TODO: cases other than nominative!
         let suffix, stem
         if (_.endsWith(this.mascWord, 'y')) {
             stem = chopSuffix(this.mascWord, 'y')
@@ -385,6 +389,7 @@ class Possesive {
     }
 }
 
+// TODO: quantities
 
 class StandardNounPhrase extends NounPhrase implements INoun {
     constructor(
