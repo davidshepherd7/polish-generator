@@ -1,4 +1,4 @@
-import { assertNotNil, Gender, chopSuffix, IAdjective, Case } from './core'
+import { assertNotNil, Gender, chopSuffix, IAdjective, Case, assertNever } from './core'
 import _ = require('lodash');
 
 
@@ -10,35 +10,87 @@ export class Adjective implements IAdjective {
     }
 
     render(gender: Gender, grammaticalCase: Case) {
-        // TODO: cases other than nominative!
-        let suffix, stem
-        if (_.endsWith(this.mascWord, 'y')) {
-            stem = chopSuffix(this.mascWord, 'y')
-            if (gender === 'masc')
-                suffix = 'y'
-            else if (gender === 'fem')
-                suffix = 'a'
-            else if (gender === 'neut')
-                suffix = 'e'
-            else
-                throw new Error(`bad gender ${gender}`)
+        if (grammaticalCase === 'nom') {
+            if (_.endsWith(this.mascWord, 'y')) {
+                const stem = chopSuffix(this.mascWord, 'y')
+                if (gender === 'masc')
+                    return stem + 'y'
+                else if (gender === 'fem')
+                    return stem + 'a'
+                else if (gender === 'neut')
+                    return stem + 'e'
+
+                return assertNever(gender)
+            }
+            else if (_.endsWith(this.mascWord, 'i')) {
+                const stem = chopSuffix(this.mascWord, 'i')
+                if (gender === 'masc')
+                    return stem + 'i'
+                else if (gender === 'fem')
+                    return stem + 'a'
+                else if (gender === 'neut')
+                    return stem + 'ie'
+
+                return assertNever(gender)
+            }
+            else {
+                throw new Error(`unknown masculine adjective type ${this.mascWord}`)
+            }
         }
-        else if (_.endsWith(this.mascWord, 'i')) {
-            stem = chopSuffix(this.mascWord, 'i')
-            if (gender === 'masc')
-                suffix = 'i'
-            else if (gender === 'fem')
-                suffix = 'a'
-            else if (gender === 'neut')
-                suffix = 'ie'
-            else
-                throw new Error(`bad gender ${gender}`)
+        else if (grammaticalCase === 'acc') {
+            if (_.endsWith(this.mascWord, 'y')) {
+                const stem = chopSuffix(this.mascWord, 'y')
+                if (gender === 'masc')
+                    // TODO: inanimate
+                    return stem + 'ego'
+                else if (gender === 'fem')
+                    return stem + 'ą'
+                else if (gender === 'neut')
+                    return stem + 'e'
+
+                return assertNever(gender)
+            }
+            else if (_.endsWith(this.mascWord, 'i')) {
+                const stem = chopSuffix(this.mascWord, 'i')
+                if (gender === 'masc')
+                    // TODO: inanimate
+                    return stem + 'iego'
+                else if (gender === 'fem')
+                    return stem + 'ą'
+                else if (gender === 'neut')
+                    return stem + 'ie'
+
+                return assertNever(gender)
+            }
+            else {
+                throw new Error(`unknown masculine adjective type ${this.mascWord}`)
+            }
         }
-        else {
-            throw new Error(`unknown masculine adjective type ${this.mascWord}`)
+        else if (grammaticalCase === 'gen') {
+            if (_.endsWith(this.mascWord, 'y')) {
+                const stem = chopSuffix(this.mascWord, 'y')
+                if (gender === 'masc' || gender === 'neut')
+                    return stem + 'ego'
+                else if (gender === 'fem')
+                    return stem + 'ej'
+
+                return assertNever(gender)
+            }
+            else if (_.endsWith(this.mascWord, 'i')) {
+                const stem = chopSuffix(this.mascWord, 'i')
+                if (gender === 'masc' || gender === 'neut')
+                    return stem + 'iego'
+                else if (gender === 'fem')
+                    return stem + 'iej'
+
+                return assertNever(gender)
+            }
+            else {
+                throw new Error(`unknown masculine adjective type ${this.mascWord}`)
+            }
         }
 
-        return stem + suffix
+        return assertNever(grammaticalCase)
     }
 
     static generate(): IAdjective {
