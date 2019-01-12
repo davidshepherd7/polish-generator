@@ -1,5 +1,5 @@
 import * as _ from 'lodash'
-import { Renderable, Gender, randomElement, chopSuffix, Case, NounType, assertNever } from './core'
+import { Renderable, Gender, chopSuffix, Case, NounType, assertNever, assertNotNil } from './core'
 
 
 interface INoun {
@@ -41,23 +41,14 @@ export abstract class NounPhrase implements INoun {
     abstract get translation(): string
 
     static generate(): NounPhrase {
-        const x = _.random(0, 2, false)
-        if (x === 0) {
-            return Name.generate()
-        }
-        else if (x === 1) {
-            return Pronoun.generate()
-        }
-        else if (x === 2) {
-            return StandardNounPhrase.generate()
-        }
-        throw new Error('never get here')
+        const factory = assertNotNil(_.sample([Name.generate, Pronoun.generate, StandardNounPhrase.generate]))
+        return factory();
     }
 }
 
 
 class Noun {
-    static generate() {
+    static generate(): INoun {
         const nouns = [
             new FeminineNoun('kobieta', 'woman'),
             new MascAnmiateNoun('mężczyzna', 'man'),
@@ -89,7 +80,7 @@ class Noun {
             new MascInanmiateNoun('sok', 'juice'),
             new NeuterNoun('piwo', 'beer'),
         ]
-        return randomElement(nouns)
+        return assertNotNil(_.sample(nouns))
     }
 }
 
@@ -194,7 +185,7 @@ class Adjective {
         return this.genderedString('masc')
     }
 
-    static generate() {
+    static generate(): Adjective {
         const words = [
             new Adjective('mały', 'small'),
             new Adjective('długi', 'big'),
@@ -214,7 +205,7 @@ class Adjective {
             new Adjective('fioletowy', 'purple'),
             new Adjective('pomaranczowy', 'orange'),
         ]
-        return randomElement(words)
+        return assertNotNil(_.sample(words))
     }
 
     genderedString(gender: Gender): string {
@@ -280,7 +271,7 @@ class Pronoun extends NounPhrase implements INoun {
             new Pronoun({ 'nom': 'wy', 'acc': 'was' }, 'you (pl.)', 'neut', 'wy'),
             new Pronoun({ 'nom': 'my', 'acc': 'nas' }, 'we', 'neut', 'my'),
         ]
-        return randomElement(words)
+        return assertNotNil(_.sample(words))
     }
 }
 
@@ -317,7 +308,7 @@ class Name extends NounPhrase implements INoun {
             new Name('Marie', 'fem'),
             new Name('Lech', 'masc'),
         ]
-        return randomElement(words)
+        return assertNotNil(_.sample(words))
     }
 }
 

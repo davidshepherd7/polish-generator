@@ -5,13 +5,6 @@ export interface Renderable {
     translation: string
 }
 
-
-export function randomElement<T>(list: T[]): T {
-    const idx = _.random(0, list.length - 1, false)
-    return list[idx]
-}
-
-
 export type Gender = 'masc' | 'fem' | 'neut'
 export type Case = 'nom' | 'acc'
 
@@ -27,4 +20,10 @@ export function chopSuffix(word: string, target: string): string {
 
 export function assertNever(x: never): never {
     throw new Error("Unexpected object: " + x);
+}
+
+export function assertNotNil<T>(x: T | null | undefined): T {
+    if (_.isNil(x))
+        throw new Error("Unexpected nil")
+    return x
 }

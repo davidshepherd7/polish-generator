@@ -1,4 +1,4 @@
-import { Renderable, randomElement, NounType, chopSuffix } from './core'
+import { Renderable, NounType, chopSuffix, assertNotNil } from './core'
 import { NounPhrase } from './nouns'
 import { Verb } from './verbs'
 import _ from 'lodash';
@@ -20,10 +20,10 @@ export class Sentence implements Renderable {
     }
 
     static generate() {
-        const phrase = randomElement([
-            () => NominativePhrase.generate(),
-            () => SubjectObjectPhrase.generate()
-        ])()
+        const phrase = assertNotNil(_.sample([
+            NominativePhrase.generate,
+            SubjectObjectPhrase.generate,
+        ]))()
         return new Sentence(phrase)
     }
 }

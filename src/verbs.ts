@@ -1,6 +1,6 @@
-
-import { randomElement, NounType, chopSuffix } from './core'
+import { NounType, chopSuffix, assertNotNil } from './core'
 import { NounPhrase } from './nouns'
+import _ from 'lodash';
 
 export abstract class Verb {
     abstract render(nounType?: NounType): string
@@ -13,7 +13,7 @@ export abstract class Verb {
             new MowicVerb('mowić', 'speak'),
             new UczycVerb('uczyć', 'teach'),
         ]
-        return randomElement(words)
+        return assertNotNil(_.sample(words))
     }
 }
 
