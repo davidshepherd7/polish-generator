@@ -55,11 +55,11 @@ export class Noun {
     static generate(): INoun {
         const nouns = [
             new FeminineNoun('kobieta', 'woman'),
-            new MascAnmiateNoun('mężczyzna', 'man'),
+            new MascAnimateNoun('mężczyzna', 'man'),
             new MascPersonNoun('nauczyciel', 'teacher'),
             new NeuterNoun('dziecko', 'child'),
-            new MascAnmiateNoun('pies', 'dog'),
-            new MascAnmiateNoun('kot', 'cat'),
+            new MascAnimateNoun('pies', 'dog'),
+            new MascAnimateNoun('kot', 'cat'),
 
             new MascInanmiateNoun('stół', 'table'),
             new NeuterNoun('łóżko', 'bed'),
@@ -176,7 +176,7 @@ class MascPersonNoun implements INoun {
     }
 }
 
-class MascAnmiateNoun implements INoun {
+class MascAnimateNoun implements INoun {
     gender: Gender = 'masc'
     nounType: NounType = 'on'
 

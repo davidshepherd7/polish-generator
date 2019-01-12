@@ -1,6 +1,5 @@
-import { assertNotNil, Gender, chopSuffix, INoun } from './core'
+import { assertNotNil, Gender, chopSuffix } from './core'
 import _ = require('lodash');
-import { Name, Pronoun } from './nouns';
 
 
 export class Adjective {
@@ -67,26 +66,5 @@ export class Adjective {
         }
 
         return stem + suffix
-    }
-}
-
-export class Possesive {
-    constructor(
-        private owner: INoun,
-    ) {
-    }
-
-    render() {
-        return this.owner.render('gen')
-    }
-
-    get translation() {
-        return this.owner.translation + "'s"
-    }
-
-    static generate() {
-        const factory = assertNotNil(_.sample([Name.generate, Pronoun.generate]));
-        const owner = factory()
-        return new Possesive(owner);
     }
 }

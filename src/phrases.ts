@@ -1,6 +1,7 @@
 import { Renderable, NounType, chopSuffix, assertNotNil, INoun, Gender, Case } from './core'
 import { Verb } from './verbs'
-import { Adjective, Possesive } from './adjectives'
+import { Adjective } from './adjectives'
+import { Possessive } from './possessive'
 import _ from 'lodash';
 import { Noun, Pronoun, Name } from './nouns';
 
@@ -26,7 +27,7 @@ class StandardNounPhrase extends NounPhrase implements INoun {
     constructor(
         private descriptiveAdjectives: Adjective[],
         private noun: INoun,
-        private possesive: Possesive | null = null
+        private possesive: Possessive | null = null
     ) {
         super()
     }
@@ -63,7 +64,7 @@ class StandardNounPhrase extends NounPhrase implements INoun {
         return new StandardNounPhrase(
             _.times(nAdjectives, () => Adjective.generate()),
             Noun.generate(),
-            withPossessive ? Possesive.generate() : null,
+            withPossessive ? Possessive.generate() : null,
         )
     }
 }
