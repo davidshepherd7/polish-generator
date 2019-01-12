@@ -1,4 +1,4 @@
-import { Renderable, NounType, chopSuffix, assertNotNil, INoun, Gender, Case } from './core'
+import { Renderable, NounType, chopSuffix, assertNotNil, INoun, Gender, Case, IAdjective } from './core'
 import { Verb } from './verbs'
 import { Adjective } from './adjectives'
 import { Possessive } from './possessive'
@@ -25,7 +25,7 @@ export abstract class NounPhrase implements INoun {
 
 class StandardNounPhrase extends NounPhrase implements INoun {
     constructor(
-        private descriptiveAdjectives: Adjective[],
+        private descriptiveAdjectives: IAdjective[],
         private noun: INoun,
         private possesive: Possessive | null = null
     ) {
@@ -34,7 +34,7 @@ class StandardNounPhrase extends NounPhrase implements INoun {
 
     render(grammaticalCase: Case) {
         return [
-            ...this.descriptiveAdjectives.map(a => a.genderedString(this.noun.gender)),
+            ...this.descriptiveAdjectives.map(a => a.render(this.noun.gender, grammaticalCase)),
             this.noun.render(grammaticalCase),
             ...(this.possesive ? [this.possesive.render()] : [])
         ].join(' ')

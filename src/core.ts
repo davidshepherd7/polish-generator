@@ -34,3 +34,8 @@ export interface INoun {
     gender: Gender
     nounType: NounType
 }
+
+export interface IAdjective {
+    render(gender: Gender, grammaticalCase: Case): string
+    translation: string
+}

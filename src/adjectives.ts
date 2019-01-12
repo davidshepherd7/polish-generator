@@ -1,42 +1,15 @@
-import { assertNotNil, Gender, chopSuffix } from './core'
+import { assertNotNil, Gender, chopSuffix, IAdjective, Case } from './core'
 import _ = require('lodash');
 
 
-export class Adjective {
+export class Adjective implements IAdjective {
     constructor(
         public mascWord: string,
         public translation: string,
     ) {
     }
 
-    render() {
-        return this.genderedString('masc')
-    }
-
-    static generate(): Adjective {
-        const words = [
-            new Adjective('mały', 'small'),
-            new Adjective('długi', 'big'),
-            new Adjective('kolorowy', 'colourful'),
-
-            new Adjective('drogi', 'expensive'),
-            new Adjective('tani', 'cheap'),
-
-            new Adjective('smaczny', 'tasty'),
-
-            new Adjective('zielony', 'green'),
-            new Adjective('czarny', 'black'),
-            new Adjective('żółty', 'yellow'),
-            new Adjective('czerwony', 'red'),
-            new Adjective('niebiesky', 'blue'),
-            new Adjective('brązowy', 'brown'),
-            new Adjective('fioletowy', 'purple'),
-            new Adjective('pomaranczowy', 'orange'),
-        ]
-        return assertNotNil(_.sample(words))
-    }
-
-    genderedString(gender: Gender): string {
+    render(gender: Gender, grammaticalCase: Case) {
         // TODO: cases other than nominative!
         let suffix, stem
         if (_.endsWith(this.mascWord, 'y')) {
@@ -66,5 +39,28 @@ export class Adjective {
         }
 
         return stem + suffix
+    }
+
+    static generate(): IAdjective {
+        const words = [
+            new Adjective('mały', 'small'),
+            new Adjective('długi', 'big'),
+            new Adjective('kolorowy', 'colourful'),
+
+            new Adjective('drogi', 'expensive'),
+            new Adjective('tani', 'cheap'),
+
+            new Adjective('smaczny', 'tasty'),
+
+            new Adjective('zielony', 'green'),
+            new Adjective('czarny', 'black'),
+            new Adjective('żółty', 'yellow'),
+            new Adjective('czerwony', 'red'),
+            new Adjective('niebiesky', 'blue'),
+            new Adjective('brązowy', 'brown'),
+            new Adjective('fioletowy', 'purple'),
+            new Adjective('pomaranczowy', 'orange'),
+        ]
+        return assertNotNil(_.sample(words))
     }
 }
