@@ -1,5 +1,115 @@
 (function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var core_1 = require("./core");
+var _ = require("lodash");
+var Adjective = /** @class */ (function () {
+    function Adjective(mascWord, translation) {
+        this.mascWord = mascWord;
+        this.translation = translation;
+    }
+    // TODO: handle animate vs inanimate
+    Adjective.prototype.render = function (gender, grammaticalCase) {
+        if (grammaticalCase === 'nom') {
+            if (_.endsWith(this.mascWord, 'y')) {
+                var stem = core_1.chopSuffix(this.mascWord, 'y');
+                if (gender === 'masc')
+                    return stem + 'y';
+                else if (gender === 'fem')
+                    return stem + 'a';
+                else if (gender === 'neut')
+                    return stem + 'e';
+                return core_1.assertNever(gender);
+            }
+            else if (_.endsWith(this.mascWord, 'i')) {
+                var stem = core_1.chopSuffix(this.mascWord, 'i');
+                if (gender === 'masc')
+                    return stem + 'i';
+                else if (gender === 'fem')
+                    return stem + 'a';
+                else if (gender === 'neut')
+                    return stem + 'ie';
+                return core_1.assertNever(gender);
+            }
+            else {
+                throw new Error("unknown masculine adjective type " + this.mascWord);
+            }
+        }
+        else if (grammaticalCase === 'acc') {
+            if (_.endsWith(this.mascWord, 'y')) {
+                var stem = core_1.chopSuffix(this.mascWord, 'y');
+                if (gender === 'masc')
+                    // TODO: inanimate
+                    return stem + 'ego';
+                else if (gender === 'fem')
+                    return stem + 'ą';
+                else if (gender === 'neut')
+                    return stem + 'e';
+                return core_1.assertNever(gender);
+            }
+            else if (_.endsWith(this.mascWord, 'i')) {
+                var stem = core_1.chopSuffix(this.mascWord, 'i');
+                if (gender === 'masc')
+                    // TODO: inanimate
+                    return stem + 'iego';
+                else if (gender === 'fem')
+                    return stem + 'ą';
+                else if (gender === 'neut')
+                    return stem + 'ie';
+                return core_1.assertNever(gender);
+            }
+            else {
+                throw new Error("unknown masculine adjective type " + this.mascWord);
+            }
+        }
+        else if (grammaticalCase === 'gen') {
+            if (_.endsWith(this.mascWord, 'y')) {
+                var stem = core_1.chopSuffix(this.mascWord, 'y');
+                if (gender === 'masc' || gender === 'neut')
+                    return stem + 'ego';
+                else if (gender === 'fem')
+                    return stem + 'ej';
+                return core_1.assertNever(gender);
+            }
+            else if (_.endsWith(this.mascWord, 'i')) {
+                var stem = core_1.chopSuffix(this.mascWord, 'i');
+                if (gender === 'masc' || gender === 'neut')
+                    return stem + 'iego';
+                else if (gender === 'fem')
+                    return stem + 'iej';
+                return core_1.assertNever(gender);
+            }
+            else {
+                throw new Error("unknown masculine adjective type " + this.mascWord);
+            }
+        }
+        return core_1.assertNever(grammaticalCase);
+    };
+    Adjective.generate = function () {
+        var words = [
+            new Adjective('mały', 'small'),
+            new Adjective('długi', 'big'),
+            new Adjective('kolorowy', 'colourful'),
+            new Adjective('drogi', 'expensive'),
+            new Adjective('tani', 'cheap'),
+            new Adjective('smaczny', 'tasty'),
+            new Adjective('zielony', 'green'),
+            new Adjective('czarny', 'black'),
+            new Adjective('żółty', 'yellow'),
+            new Adjective('czerwony', 'red'),
+            new Adjective('niebiesky', 'blue'),
+            new Adjective('brązowy', 'brown'),
+            new Adjective('fioletowy', 'purple'),
+            new Adjective('pomaranczowy', 'orange'),
+        ];
+        return core_1.assertNotNil(_.sample(words));
+    };
+    return Adjective;
+}());
+exports.Adjective = Adjective;
+
+},{"./core":2,"lodash":8}],2:[function(require,module,exports){
+"use strict";
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -9,11 +119,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 var _ = __importStar(require("lodash"));
-function randomElement(list) {
-    var idx = _.random(0, list.length - 1, false);
-    return list[idx];
-}
-exports.randomElement = randomElement;
 function chopSuffix(word, target) {
     if (_.endsWith(word, target))
         return word.split('').slice(0, -target.length).join('');
@@ -21,8 +126,18 @@ function chopSuffix(word, target) {
         return word;
 }
 exports.chopSuffix = chopSuffix;
+function assertNever(x) {
+    throw new Error("Unexpected object: " + x);
+}
+exports.assertNever = assertNever;
+function assertNotNil(x) {
+    if (_.isNil(x))
+        throw new Error("Unexpected nil");
+    return x;
+}
+exports.assertNotNil = assertNotNil;
 
-},{"lodash":6}],2:[function(require,module,exports){
+},{"lodash":8}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var phrases_1 = require("./phrases");
@@ -48,7 +163,259 @@ window.ctrl = {
 generate();
 toggleTranslation(false);
 
-},{"./phrases":4}],3:[function(require,module,exports){
+},{"./phrases":5}],4:[function(require,module,exports){
+"use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+var _ = __importStar(require("lodash"));
+var core_1 = require("./core");
+function stem(word) {
+    return _.trimEnd(word, 'aeiouąę');
+}
+function stripIes(word) {
+    if (_.endsWith(word, 'ek')) {
+        return core_1.chopSuffix(word, 'ek') + 'k';
+    }
+    else if (_.endsWith(word, 'ies')) {
+        return core_1.chopSuffix(word, 'ies') + 's';
+    }
+    else if (_.endsWith(word, 'iec')) {
+        return core_1.chopSuffix(word, 'iec') + 'c';
+    }
+    else {
+        return word;
+    }
+}
+function mascFemAccusative(word) {
+    // some weird masc words act like feminine ones
+    if (_.endsWith(word, 'a'))
+        return core_1.chopSuffix(word, 'a') + 'ę';
+    else if (_.endsWith(word, 't'))
+        return word + 'a';
+    else if (_.endsWith(word, 's'))
+        return word + 'a';
+    else if (_.endsWith(word, 'c'))
+        return word + 'a';
+    else if (_.endsWith(word, 'k'))
+        return word + 'a';
+    else if (_.endsWith(word, 'l'))
+        return word;
+    else if (_.endsWith(word, 'ł'))
+        return word + 'y';
+    else if (_.endsWith(word, 'g'))
+        return word;
+    else
+        return word;
+}
+// TODO: litre of, bottle of, packet of, etc
+var Noun = /** @class */ (function () {
+    function Noun() {
+    }
+    Noun.generate = function () {
+        var nouns = [
+            new FeminineNoun('kobieta', 'woman'),
+            new MascAnimateNoun('mężczyzna', 'man'),
+            new MascPersonNoun('nauczyciel', 'teacher'),
+            new NeuterNoun('dziecko', 'child'),
+            new MascAnimateNoun('pies', 'dog'),
+            new MascAnimateNoun('kot', 'cat'),
+            new MascInanmiateNoun('stół', 'table'),
+            new NeuterNoun('łóżko', 'bed'),
+            new FeminineNoun('książka', 'book'),
+            new FeminineNoun('torba', 'bag'),
+            new MascInanmiateNoun('nóż', 'knife'),
+            new MascInanmiateNoun('widelec', 'fork'),
+            new FeminineNoun('łyżka', 'spoon'),
+            new FeminineNoun('miska', 'bowl'),
+            new MascInanmiateNoun('talerz', 'plate'),
+            new FeminineNoun('butelka', 'bottle'),
+            new NeuterNoun('jabłko', 'apple'),
+            new FeminineNoun('gruszka', 'pear'),
+            new MascInanmiateNoun('chleb', 'bread'),
+            new MascInanmiateNoun('dworzec', 'station'),
+            new FeminineNoun('poczta', 'post office'),
+            new MascInanmiateNoun('hotel', 'hotel'),
+            new NeuterNoun('muzeum', 'museum'),
+            new FeminineNoun('herbata', 'tea'),
+            new FeminineNoun('kawa', 'coffee'),
+            new MascInanmiateNoun('sok', 'juice'),
+            new NeuterNoun('piwo', 'beer'),
+        ];
+        return core_1.assertNotNil(_.sample(nouns));
+    };
+    return Noun;
+}());
+exports.Noun = Noun;
+var NeuterNoun = /** @class */ (function () {
+    function NeuterNoun(word, translation) {
+        this.word = word;
+        this.translation = translation;
+        this.gender = 'neut';
+        this.nounType = 'on';
+    }
+    NeuterNoun.prototype.render = function (grammaticalCase) {
+        if (_.endsWith('um'))
+            return this.word;
+        if (grammaticalCase === 'nom') {
+            return this.word;
+        }
+        else if (grammaticalCase === 'acc') {
+            return this.word;
+        }
+        else if (grammaticalCase === 'gen') {
+            return stem(this.word) + 'a';
+        }
+        return core_1.assertNever(grammaticalCase);
+    };
+    return NeuterNoun;
+}());
+var FeminineNoun = /** @class */ (function () {
+    function FeminineNoun(word, translation) {
+        this.word = word;
+        this.translation = translation;
+        this.gender = 'fem';
+        this.nounType = 'on';
+    }
+    FeminineNoun.prototype.render = function (grammaticalCase) {
+        if (grammaticalCase === 'nom') {
+            return this.word;
+        }
+        else if (grammaticalCase === 'acc') {
+            return mascFemAccusative(this.word);
+        }
+        else if (grammaticalCase === 'gen') {
+            var s = stem(this.word);
+            if (_.endsWith(s, 'k') || _.endsWith(s, 'g')) {
+                return s + 'i';
+            }
+            else {
+                return s + 'y';
+            }
+        }
+        return core_1.assertNever(grammaticalCase);
+    };
+    return FeminineNoun;
+}());
+var MascPersonNoun = /** @class */ (function () {
+    function MascPersonNoun(word, translation) {
+        this.word = word;
+        this.translation = translation;
+        this.gender = 'masc';
+        this.nounType = 'on';
+    }
+    MascPersonNoun.prototype.render = function (grammaticalCase) {
+        if (grammaticalCase === 'nom') {
+            return this.word;
+        }
+        else if (grammaticalCase === 'acc') {
+            return this.word + 'a';
+        }
+        else if (grammaticalCase === 'gen') {
+            return this.word + 'a';
+        }
+        return core_1.assertNever(grammaticalCase);
+    };
+    return MascPersonNoun;
+}());
+var MascAnimateNoun = /** @class */ (function () {
+    function MascAnimateNoun(word, translation) {
+        this.word = word;
+        this.translation = translation;
+        this.gender = 'masc';
+        this.nounType = 'on';
+    }
+    MascAnimateNoun.prototype.render = function (grammaticalCase) {
+        if (grammaticalCase === 'nom') {
+            return this.word;
+        }
+        else if (grammaticalCase === 'acc') {
+            var withoutIes = stripIes(this.word);
+            return mascFemAccusative(withoutIes);
+        }
+        else if (grammaticalCase === 'gen') {
+            var withoutIes = stripIes(this.word);
+            return withoutIes + 'a';
+        }
+        return core_1.assertNever(grammaticalCase);
+    };
+    return MascAnimateNoun;
+}());
+var MascInanmiateNoun = /** @class */ (function () {
+    function MascInanmiateNoun(word, translation) {
+        this.word = word;
+        this.translation = translation;
+        this.gender = 'masc';
+        this.nounType = 'on';
+    }
+    MascInanmiateNoun.prototype.render = function (grammaticalCase) {
+        if (grammaticalCase === 'nom') {
+            return this.word;
+        }
+        else if (grammaticalCase === 'acc') {
+            var withoutIes = stripIes(this.word);
+            return mascFemAccusative(withoutIes);
+        }
+        else if (grammaticalCase === 'gen') {
+            var withoutIes = stripIes(this.word);
+            return withoutIes + 'u';
+        }
+        return core_1.assertNever(grammaticalCase);
+    };
+    return MascInanmiateNoun;
+}());
+var Pronoun = /** @class */ (function () {
+    function Pronoun(pronounCases, translation, gender, nounType) {
+        this.pronounCases = pronounCases;
+        this.translation = translation;
+        this.gender = gender;
+        this.nounType = nounType;
+    }
+    Pronoun.prototype.render = function (grammaticalCase) {
+        var x = this.pronounCases[grammaticalCase];
+        if (!x)
+            throw new Error("Unknown case " + grammaticalCase);
+        return x;
+    };
+    Pronoun.generate = function () {
+        var words = [
+            // TODO: not sure about these genders...
+            new Pronoun({ 'nom': 'on', 'acc': 'jego', 'gen': 'jego' }, 'he', 'masc', 'on'),
+            new Pronoun({ 'nom': 'ona', 'acc': 'ją', 'gen': 'jej' }, 'she', 'fem', 'on'),
+            new Pronoun({ 'nom': 'one', 'acc': 'je', 'gen': 'ich' }, 'they (non-masc.)', 'fem', 'oni'),
+            new Pronoun({ 'nom': 'oni', 'acc': 'ich', 'gen': 'ich' }, 'they (any-masc.)', 'masc', 'oni'),
+            new Pronoun({ 'nom': 'ono', 'acc': 'je', 'gen': 'jego' }, 'it', 'neut', 'on'),
+            new Pronoun({ 'nom': 'ja', 'acc': 'mnie', 'gen': 'mnie' }, 'I', 'neut', 'ja'),
+            new Pronoun({ 'nom': 'ty', 'acc': 'ciebie', 'gen': 'ciebie' }, 'you (sing.)', 'neut', 'ty'),
+            new Pronoun({ 'nom': 'wy', 'acc': 'was', 'gen': 'was' }, 'you (pl.)', 'neut', 'wy'),
+            new Pronoun({ 'nom': 'my', 'acc': 'nas', 'gen': 'nas' }, 'we', 'neut', 'my'),
+        ];
+        return core_1.assertNotNil(_.sample(words));
+    };
+    return Pronoun;
+}());
+exports.Pronoun = Pronoun;
+var Name = /** @class */ (function () {
+    function Name() {
+    }
+    Name.generate = function () {
+        var words = [
+            new MascPersonNoun('Stanisław', 'Stanisław'),
+            new FeminineNoun('Maria', 'Maria'),
+            new MascPersonNoun('Lech', 'Lech'),
+        ];
+        return core_1.assertNotNil(_.sample(words));
+    };
+    return Name;
+}());
+exports.Name = Name;
+
+},{"./core":2,"lodash":8}],5:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -60,258 +427,46 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-var _ = __importStar(require("lodash"));
 var core_1 = require("./core");
+var verbs_1 = require("./verbs");
+var adjectives_1 = require("./adjectives");
+var possessive_1 = require("./possessive");
+var lodash_1 = __importDefault(require("lodash"));
+var nouns_1 = require("./nouns");
+// TODO: quantities
 var NounPhrase = /** @class */ (function () {
     function NounPhrase() {
     }
     NounPhrase.generate = function () {
-        var x = _.random(0, 2, false);
-        if (x === 0) {
-            return Name.generate();
-        }
-        else if (x === 1) {
-            return Pronoun.generate();
-        }
-        else if (x === 2) {
-            return StandardNounPhrase.generate();
-        }
-        throw new Error('never get here');
+        var factory = core_1.assertNotNil(lodash_1.default.sample([nouns_1.Name.generate, nouns_1.Pronoun.generate, StandardNounPhrase.generate]));
+        return factory();
     };
     return NounPhrase;
 }());
 exports.NounPhrase = NounPhrase;
-var Noun = /** @class */ (function () {
-    function Noun(word, translation, gender) {
-        this.word = word;
-        this.translation = translation;
-        this.nounType = 'on';
-        if (gender)
-            this.gender = gender;
-        else
-            this.gender = this.pickGender(word);
-    }
-    Noun.prototype.render = function (grammaticalCase) {
-        if (grammaticalCase === void 0) { grammaticalCase = 'nom'; }
-        if (grammaticalCase === 'nom') {
-            return this.word;
-        }
-        else if (grammaticalCase === 'acc') {
-            if (this.gender === 'neut')
-                return this.word;
-            else if (_.endsWith(this.word, 'a'))
-                return core_1.chopSuffix(this.word, 'a') + 'ę';
-            else if (_.endsWith(this.word, 't'))
-                return this.word + 'a';
-            else if (_.endsWith(this.word, 'ies'))
-                return core_1.chopSuffix(this.word, 'ies') + 'sa';
-            else if (_.endsWith(this.word, 'k'))
-                return this.word + 'a';
-            else if (_.endsWith(this.word, 'l'))
-                return this.word;
-            else if (_.endsWith(this.word, 'ł'))
-                return this.word + 'y';
-            else if (_.endsWith(this.word, 'g'))
-                return this.word;
-            else
-                return this.word;
-        }
-        throw new Error("Unknown case " + grammaticalCase);
-    };
-    Noun.prototype.pickGender = function (word) {
-        if (_.endsWith(word, 'a'))
-            return 'fem';
-        else if (_.chain(['e', 'o', 'um', 'ę']).map(function (end) { return _.endsWith(word, end); }).some().value())
-            return 'neut';
-        else
-            return 'masc';
-    };
-    Noun.generate = function () {
-        var nouns = [
-            new Noun('kobieta', 'woman'),
-            new Noun('mężczyzna', 'man', 'masc'),
-            new Noun('dziecko', 'child'),
-            new Noun('stół', 'table'),
-            new Noun('łóżko', 'bed'),
-            new Noun('książka', 'book'),
-            new Noun('torba', 'bag'),
-            new Noun('nóż', 'knife'),
-            new Noun('widelec', 'fork'),
-            new Noun('łyżka', 'spoon'),
-            new Noun('miska', 'bowl'),
-            new Noun('talerz', 'plate'),
-            new Noun('butelka', 'bottle'),
-            new Noun('jabłko', 'apple'),
-            new Noun('gruszka', 'pear'),
-            new Noun('chleb', 'bread'),
-            new Noun('dworzec', 'station'),
-            new Noun('poczta', 'post office'),
-            new Noun('hotel', 'hotel'),
-            new Noun('herbata', 'tea'),
-            new Noun('kawa', 'coffee'),
-            new Noun('sok', 'juice'),
-            new Noun('piwo', 'beer'),
-        ];
-        return core_1.randomElement(nouns);
-    };
-    return Noun;
-}());
-var Adjective = /** @class */ (function () {
-    function Adjective(mascWord, translation) {
-        this.mascWord = mascWord;
-        this.translation = translation;
-    }
-    Adjective.prototype.render = function () {
-        return this.genderedString('masc');
-    };
-    Adjective.generate = function () {
-        var words = [
-            new Adjective('mały', 'small'),
-            new Adjective('długi', 'big'),
-            new Adjective('kolorowy', 'colourful'),
-            new Adjective('drogi', 'expensive'),
-            new Adjective('tani', 'cheap'),
-            new Adjective('smaczny', 'tasty'),
-            new Adjective('zielony', 'green'),
-            new Adjective('czarny', 'black'),
-            new Adjective('żółty', 'yellow'),
-            new Adjective('czerwony', 'red'),
-            new Adjective('niebiesky', 'blue'),
-            new Adjective('brązowy', 'brown'),
-            new Adjective('fioletowy', 'purple'),
-            new Adjective('pomaranczowy', 'orange'),
-        ];
-        return core_1.randomElement(words);
-    };
-    Adjective.prototype.genderedString = function (gender) {
-        var suffix, stem;
-        if (_.endsWith(this.mascWord, 'y')) {
-            stem = core_1.chopSuffix(this.mascWord, 'y');
-            if (gender === 'masc')
-                suffix = 'y';
-            else if (gender === 'fem')
-                suffix = 'a';
-            else if (gender === 'neut')
-                suffix = 'e';
-            else
-                throw new Error("bad gender " + gender);
-        }
-        else if (_.endsWith(this.mascWord, 'i')) {
-            stem = core_1.chopSuffix(this.mascWord, 'i');
-            if (gender === 'masc')
-                suffix = 'i';
-            else if (gender === 'fem')
-                suffix = 'a';
-            else if (gender === 'neut')
-                suffix = 'ie';
-            else
-                throw new Error("bad gender " + gender);
-        }
-        else {
-            throw new Error("unknown masculine adjective type " + this.mascWord);
-        }
-        return stem + suffix;
-    };
-    return Adjective;
-}());
-var Pronoun = /** @class */ (function (_super) {
-    __extends(Pronoun, _super);
-    function Pronoun(pronounCases, translation, gender, nounType) {
-        var _this = _super.call(this) || this;
-        _this.pronounCases = pronounCases;
-        _this.translation = translation;
-        _this.gender = gender;
-        _this.nounType = nounType;
-        return _this;
-    }
-    Pronoun.prototype.render = function (grammaticalCase) {
-        if (grammaticalCase === void 0) { grammaticalCase = 'nom'; }
-        var x = this.pronounCases[grammaticalCase];
-        if (!x)
-            throw new Error("Unknown case " + grammaticalCase);
-        return x;
-    };
-    Pronoun.generate = function () {
-        var words = [
-            // TODO: not sure about these genders...
-            new Pronoun({ 'nom': 'on', 'acc': 'jego' }, 'he', 'masc', 'on'),
-            new Pronoun({ 'nom': 'ona', 'acc': 'ją' }, 'she', 'fem', 'on'),
-            new Pronoun({ 'nom': 'one', 'acc': 'je' }, 'they (non-masc.)', 'fem', 'oni'),
-            new Pronoun({ 'nom': 'oni', 'acc': 'ich' }, 'they (any-masc.)', 'masc', 'oni'),
-            new Pronoun({ 'nom': 'ono', 'acc': 'je' }, 'ono', 'neut', 'on'),
-            new Pronoun({ 'nom': 'ja', 'acc': 'mnie' }, 'I', 'neut', 'ja'),
-            new Pronoun({ 'nom': 'ty', 'acc': 'ciebie' }, 'you (sing.)', 'neut', 'ty'),
-            new Pronoun({ 'nom': 'wy', 'acc': 'was' }, 'you (pl.)', 'neut', 'wy'),
-            new Pronoun({ 'nom': 'my', 'acc': 'nas' }, 'we', 'neut', 'my'),
-        ];
-        return core_1.randomElement(words);
-    };
-    return Pronoun;
-}(NounPhrase));
-var Name = /** @class */ (function (_super) {
-    __extends(Name, _super);
-    function Name(name, gender) {
-        var _this = _super.call(this) || this;
-        _this.name = name;
-        _this.gender = gender;
-        _this.nounType = 'on';
-        return _this;
-    }
-    Object.defineProperty(Name.prototype, "translation", {
-        get: function () {
-            return this.name;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Name.prototype.render = function (grammaticalCase) {
-        if (grammaticalCase === void 0) { grammaticalCase = 'nom'; }
-        if (grammaticalCase === 'nom') {
-            return this.name;
-        }
-        else if (grammaticalCase === 'acc') {
-            return this.name;
-        }
-        else {
-            throw new Error("Unknown case " + grammaticalCase);
-        }
-    };
-    Name.generate = function () {
-        var words = [
-            new Name('Stanisław', 'masc'),
-            new Name('Marie', 'fem'),
-            new Name('Lech', 'masc'),
-        ];
-        return core_1.randomElement(words);
-    };
-    return Name;
-}(NounPhrase));
 var StandardNounPhrase = /** @class */ (function (_super) {
     __extends(StandardNounPhrase, _super);
-    function StandardNounPhrase(descriptiveAdjectives, noun) {
+    function StandardNounPhrase(descriptiveAdjectives, noun, possesive) {
+        if (possesive === void 0) { possesive = null; }
         var _this = _super.call(this) || this;
         _this.descriptiveAdjectives = descriptiveAdjectives;
         _this.noun = noun;
+        _this.possesive = possesive;
         return _this;
     }
     StandardNounPhrase.prototype.render = function (grammaticalCase) {
         var _this = this;
-        if (grammaticalCase === void 0) { grammaticalCase = 'nom'; }
-        return this.descriptiveAdjectives.map(function (a) { return a.genderedString(_this.noun.gender); }).concat([
+        return this.descriptiveAdjectives.map(function (a) { return a.render(_this.noun.gender, grammaticalCase); }).concat([
             this.noun.render(grammaticalCase)
-        ]).join(' ');
+        ], (this.possesive ? [this.possesive.render()] : [])).join(' ');
     };
     Object.defineProperty(StandardNounPhrase.prototype, "translation", {
         get: function () {
-            return this.descriptiveAdjectives.map(function (a) { return a.translation; }).concat([
+            return (this.possesive ? [this.possesive.translation] : []).concat(this.descriptiveAdjectives.map(function (a) { return a.translation; }), [
                 this.noun.translation,
             ]).join(' ');
         },
@@ -333,22 +488,12 @@ var StandardNounPhrase = /** @class */ (function (_super) {
         configurable: true
     });
     StandardNounPhrase.generate = function () {
-        var nAdjectives = _.random(0, 2);
-        return new StandardNounPhrase(_.times(nAdjectives, function () { return Adjective.generate(); }), Noun.generate());
+        var nAdjectives = lodash_1.default.random(0, 2);
+        var withPossessive = lodash_1.default.random(0, 4) == 0;
+        return new StandardNounPhrase(lodash_1.default.times(nAdjectives, function () { return adjectives_1.Adjective.generate(); }), nouns_1.Noun.generate(), withPossessive ? possessive_1.Possessive.generate() : null);
     };
     return StandardNounPhrase;
 }(NounPhrase));
-
-},{"./core":1,"lodash":6}],4:[function(require,module,exports){
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = require("./core");
-var nouns_1 = require("./nouns");
-var verbs_1 = require("./verbs");
-var lodash_1 = __importDefault(require("lodash"));
 var Sentence = /** @class */ (function () {
     function Sentence(phrase) {
         this.phrase = phrase;
@@ -364,10 +509,10 @@ var Sentence = /** @class */ (function () {
         configurable: true
     });
     Sentence.generate = function () {
-        var phrase = core_1.randomElement([
-            function () { return NominativePhrase.generate(); },
-            function () { return SubjectObjectPhrase.generate(); }
-        ])();
+        var phrase = core_1.assertNotNil(lodash_1.default.sample([
+            NominativePhrase.generate,
+            SubjectObjectPhrase.generate,
+        ]))();
         return new Sentence(phrase);
     };
     return Sentence;
@@ -380,7 +525,7 @@ var NominativePhrase = /** @class */ (function () {
     }
     NominativePhrase.prototype.render = function () {
         return [
-            this.nounPhrase.render(),
+            this.nounPhrase.render('nom'),
             this.verb.render(this.nounPhrase.nounType),
         ].join(' ');
     };
@@ -395,10 +540,11 @@ var NominativePhrase = /** @class */ (function () {
         configurable: true
     });
     NominativePhrase.generate = function () {
-        return new NominativePhrase(nouns_1.NounPhrase.generate(), verbs_1.Verb.generate());
+        return new NominativePhrase(NounPhrase.generate(), verbs_1.Verb.generate());
     };
     return NominativePhrase;
 }());
+// TODO: negations
 var SubjectObjectPhrase = /** @class */ (function () {
     function SubjectObjectPhrase(subject, verb, objectP) {
         this.subject = subject;
@@ -424,12 +570,41 @@ var SubjectObjectPhrase = /** @class */ (function () {
         configurable: true
     });
     SubjectObjectPhrase.generate = function () {
-        return new SubjectObjectPhrase(nouns_1.NounPhrase.generate(), verbs_1.Verb.generate(), nouns_1.NounPhrase.generate());
+        return new SubjectObjectPhrase(NounPhrase.generate(), verbs_1.Verb.generate(), NounPhrase.generate());
     };
     return SubjectObjectPhrase;
 }());
 
-},{"./core":1,"./nouns":3,"./verbs":5,"lodash":6}],5:[function(require,module,exports){
+},{"./adjectives":1,"./core":2,"./nouns":4,"./possessive":6,"./verbs":7,"lodash":8}],6:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var core_1 = require("./core");
+var nouns_1 = require("./nouns");
+var _ = require("lodash");
+var Possessive = /** @class */ (function () {
+    function Possessive(owner) {
+        this.owner = owner;
+    }
+    Possessive.prototype.render = function () {
+        return this.owner.render('gen');
+    };
+    Object.defineProperty(Possessive.prototype, "translation", {
+        get: function () {
+            return this.owner.translation + "'s";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Possessive.generate = function () {
+        var factory = core_1.assertNotNil(_.sample([nouns_1.Name.generate, nouns_1.Pronoun.generate]));
+        var owner = factory();
+        return new Possessive(owner);
+    };
+    return Possessive;
+}());
+exports.Possessive = Possessive;
+
+},{"./core":2,"./nouns":4,"lodash":8}],7:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -441,8 +616,12 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("./core");
+var lodash_1 = __importDefault(require("lodash"));
 var Verb = /** @class */ (function () {
     function Verb() {
     }
@@ -453,11 +632,12 @@ var Verb = /** @class */ (function () {
             new MowicVerb('mowić', 'speak'),
             new UczycVerb('uczyć', 'teach'),
         ];
-        return core_1.randomElement(words);
+        return core_1.assertNotNil(lodash_1.default.sample(words));
     };
     return Verb;
 }());
 exports.Verb = Verb;
+// TODO: adverbs
 var CzytacVerb = /** @class */ (function (_super) {
     __extends(CzytacVerb, _super);
     function CzytacVerb(verb, translation) {
@@ -583,7 +763,7 @@ var UczycVerb = /** @class */ (function (_super) {
 }(Verb));
 exports.UczycVerb = UczycVerb;
 
-},{"./core":1}],6:[function(require,module,exports){
+},{"./core":2,"lodash":8}],8:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -17684,4 +17864,4 @@ exports.UczycVerb = UczycVerb;
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[2]);
+},{}]},{},[3]);
