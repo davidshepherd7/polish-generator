@@ -1,5 +1,5 @@
 import * as _ from 'lodash'
-import { Renderable, Gender, randomElement, chopSuffix, Case, NounType } from './core'
+import { Renderable, Gender, randomElement, chopSuffix, Case, NounType, assertNever } from './core'
 
 
 interface INoun {
@@ -78,7 +78,7 @@ class Noun implements INoun {
                 return this.word
         }
 
-        throw new Error(`Unknown case ${grammaticalCase}`)
+        return assertNever(grammaticalCase);
     }
 
     private pickGender(word: string): Gender {
@@ -252,7 +252,7 @@ class Name extends NounPhrase implements INoun {
             return this.name
         }
         else {
-            throw new Error(`Unknown case ${grammaticalCase}`)
+            return assertNever(grammaticalCase);
         }
     }
 
