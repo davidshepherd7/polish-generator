@@ -9,6 +9,30 @@ interface INoun {
     nounType: NounType
 }
 
+function mascFemAccusative(word: string) {
+    // some weird masc words act like feminine ones
+    if (_.endsWith(word, 'a'))
+        return chopSuffix(word, 'a') + 'ę'
+
+    // Masc
+    else if (_.endsWith(word, 't'))
+        return word + 'a'
+    else if (_.endsWith(word, 'ies'))
+        return chopSuffix(word, 'ies') + 'sa'
+    else if (_.endsWith(word, 'k'))
+        return word + 'a'
+    else if (_.endsWith(word, 'l'))
+        return word
+    else if (_.endsWith(word, 'ł'))
+        return word + 'y'
+    else if (_.endsWith(word, 'g'))
+        return word
+
+    // Most irregular examples seem to be just the normal word
+    else
+        return word
+}
+
 
 export abstract class NounPhrase implements INoun {
     abstract get gender(): Gender
@@ -32,19 +56,51 @@ export abstract class NounPhrase implements INoun {
 }
 
 
-class Noun implements INoun {
-    gender: Gender
+class Noun {
+    static generate() {
+        const nouns = [
+            new FeminineNoun('kobieta', 'woman'),
+            new MascAnmiateNoun('mężczyzna', 'man'),
+            new NeuterNoun('dziecko', 'child'),
+
+            new MascInanmiateNoun('stół', 'table'),
+            new NeuterNoun('łóżko', 'bed'),
+
+            new FeminineNoun('książka', 'book'),
+            new FeminineNoun('torba', 'bag'),
+
+            new MascInanmiateNoun('nóż', 'knife'),
+            new MascInanmiateNoun('widelec', 'fork'),
+            new FeminineNoun('łyżka', 'spoon'),
+            new FeminineNoun('miska', 'bowl'),
+            new MascInanmiateNoun('talerz', 'plate'),
+            new FeminineNoun('butelka', 'bottle'),
+
+            new NeuterNoun('jabłko', 'apple'),
+            new FeminineNoun('gruszka', 'pear'),
+            new MascInanmiateNoun('chleb', 'bread'),
+
+            new MascInanmiateNoun('dworzec', 'station'),
+            new FeminineNoun('poczta', 'post office'),
+            new MascInanmiateNoun('hotel', 'hotel'),
+
+            new FeminineNoun('herbata', 'tea'),
+            new FeminineNoun('kawa', 'coffee'),
+            new MascInanmiateNoun('sok', 'juice'),
+            new NeuterNoun('piwo', 'beer'),
+        ]
+        return randomElement(nouns)
+    }
+}
+
+class NeuterNoun implements INoun {
+    gender: Gender = 'neut'
     nounType: NounType = 'on'
 
     constructor(
         public word: string,
         public translation: string,
-        gender?: Gender,
     ) {
-        if (gender)
-            this.gender = gender
-        else
-            this.gender = this.pickGender(word)
     }
 
     render(grammaticalCase: Case): string {
@@ -52,79 +108,78 @@ class Noun implements INoun {
             return this.word
         }
         else if (grammaticalCase === 'acc') {
-            if (this.gender === 'neut')
-                return this.word
-
-            // Fem (and some weird masc words)
-            else if (_.endsWith(this.word, 'a'))
-                return chopSuffix(this.word, 'a') + 'ę'
-
-            // Masc
-            else if (_.endsWith(this.word, 't'))
-                return this.word + 'a'
-            else if (_.endsWith(this.word, 'ies'))
-                return chopSuffix(this.word, 'ies') + 'sa'
-            else if (_.endsWith(this.word, 'k'))
-                return this.word + 'a'
-            else if (_.endsWith(this.word, 'l'))
-                return this.word
-            else if (_.endsWith(this.word, 'ł'))
-                return this.word + 'y'
-            else if (_.endsWith(this.word, 'g'))
-                return this.word
-
-            // Most irregular examples seem to be just the normal word
-            else
-                return this.word
+            return this.word
         }
 
         return assertNever(grammaticalCase);
     }
+}
 
-    private pickGender(word: string): Gender {
-        if (_.endsWith(word, 'a'))
-            return 'fem'
-        else if (_.chain(['e', 'o', 'um', 'ę']).map(end => _.endsWith(word, end)).some().value())
-            return 'neut'
-        else
-            return 'masc'
+class FeminineNoun implements INoun {
+    gender: Gender = 'fem'
+    nounType: NounType = 'on'
+
+    constructor(
+        public word: string,
+        public translation: string,
+    ) {
     }
 
-    static generate() {
-        const nouns = [
-            new Noun('kobieta', 'woman'),
-            new Noun('mężczyzna', 'man', 'masc'),
-            new Noun('dziecko', 'child'),
+    render(grammaticalCase: Case): string {
+        if (grammaticalCase === 'nom') {
+            return this.word
+        }
+        else if (grammaticalCase === 'acc') {
+            return mascFemAccusative(this.word)
+        }
 
-            new Noun('stół', 'table'),
-            new Noun('łóżko', 'bed'),
+        return assertNever(grammaticalCase);
+    }
+}
 
-            new Noun('książka', 'book'),
-            new Noun('torba', 'bag'),
+class MascAnmiateNoun implements INoun {
+    gender: Gender = 'masc'
+    nounType: NounType = 'on'
 
-            new Noun('nóż', 'knife'),
-            new Noun('widelec', 'fork'),
-            new Noun('łyżka', 'spoon'),
-            new Noun('miska', 'bowl'),
-            new Noun('talerz', 'plate'),
-            new Noun('butelka', 'bottle'),
-
-            new Noun('jabłko', 'apple'),
-            new Noun('gruszka', 'pear'),
-            new Noun('chleb', 'bread'),
-
-            new Noun('dworzec', 'station'),
-            new Noun('poczta', 'post office'),
-            new Noun('hotel', 'hotel'),
-
-            new Noun('herbata', 'tea'),
-            new Noun('kawa', 'coffee'),
-            new Noun('sok', 'juice'),
-            new Noun('piwo', 'beer'),
-        ]
-        return randomElement(nouns)
+    constructor(
+        public word: string,
+        public translation: string,
+    ) {
     }
 
+    render(grammaticalCase: Case): string {
+        if (grammaticalCase === 'nom') {
+            return this.word
+        }
+        else if (grammaticalCase === 'acc') {
+            return mascFemAccusative(this.word)
+        }
+
+        return assertNever(grammaticalCase);
+    }
+}
+
+
+class MascInanmiateNoun implements INoun {
+    gender: Gender = 'masc'
+    nounType: NounType = 'on'
+
+    constructor(
+        public word: string,
+        public translation: string,
+    ) {
+    }
+
+    render(grammaticalCase: Case): string {
+        if (grammaticalCase === 'nom') {
+            return this.word
+        }
+        else if (grammaticalCase === 'acc') {
+            return mascFemAccusative(this.word)
+        }
+
+        return assertNever(grammaticalCase);
+    }
 }
 
 
@@ -270,7 +325,7 @@ class Name extends NounPhrase implements INoun {
 class StandardNounPhrase extends NounPhrase implements INoun {
     constructor(
         private descriptiveAdjectives: Adjective[],
-        private noun: Noun,
+        private noun: INoun,
     ) {
         super()
     }
