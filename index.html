@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <title>Polish Nonsense Generator</title>
+    </head>
+    <body>
+
+        <div class="jumbotron" style="margin-top: 1em">
+            <div id="output" class="lead text-center"></div>
+
+            <div style="height: 2em">
+                <div id="translation" class="text-muted text-center"> </div>
+            </div>
+        </div>
+
+        <button class="btn btn-primary" style="margin-top: 1em;" type="button" onclick="ctrl.generate()" >
+            Generate some nonsense
+        </button>
+        <button class="btn btn-default" style="margin-top: 1em;" type="button" onclick="ctrl.toggleTranslation()" >
+            Toggle translation
+        </button>
+
+        <script src="bundle.js"></script>
+
+    </body>
+</html>
