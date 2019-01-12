@@ -56,6 +56,7 @@ export class Noun {
         const nouns = [
             new FeminineNoun('kobieta', 'woman'),
             new MascAnmiateNoun('mężczyzna', 'man'),
+            new MascPersonNoun('nauczyciel', 'teacher'),
             new NeuterNoun('dziecko', 'child'),
             new MascAnmiateNoun('pies', 'dog'),
             new MascAnmiateNoun('kot', 'cat'),
@@ -144,6 +145,31 @@ class FeminineNoun implements INoun {
             else {
                 return s + 'y'
             }
+        }
+
+        return assertNever(grammaticalCase);
+    }
+}
+
+class MascPersonNoun implements INoun {
+    gender: Gender = 'masc'
+    nounType: NounType = 'on'
+
+    constructor(
+        public word: string,
+        public translation: string,
+    ) {
+    }
+
+    render(grammaticalCase: Case): string {
+        if (grammaticalCase === 'nom') {
+            return this.word
+        }
+        else if (grammaticalCase === 'acc') {
+            return this.word + 'a';
+        }
+        else if (grammaticalCase === 'gen') {
+            return this.word + 'a';
         }
 
         return assertNever(grammaticalCase);
@@ -242,39 +268,12 @@ export class Pronoun implements INoun {
 }
 
 
-export class Name implements INoun {
-    nounType: NounType = 'on'
-
-    constructor(
-        private name: string,
-        public gender: Gender,
-    ) {
-    }
-
-    get translation() {
-        return this.name
-    }
-
-    render(grammaticalCase: Case) {
-        if (grammaticalCase === 'nom') {
-            return this.name
-        }
-        else if (grammaticalCase === 'acc') {
-            return this.name
-        }
-        else if (grammaticalCase === 'gen') {
-            return `Genitive(${this.name})`
-        }
-        else {
-            return assertNever(grammaticalCase);
-        }
-    }
-
-    static generate(): Name {
+export class Name {
+    static generate(): INoun {
         const words = [
-            new Name('Stanisław', 'masc'),
-            new Name('Marie', 'fem'),
-            new Name('Lech', 'masc'),
+            new MascPersonNoun('Stanisław', 'Stanisław'),
+            new FeminineNoun('Maria', 'Maria'),
+            new MascPersonNoun('Lech', 'Lech'),
         ]
         return assertNotNil(_.sample(words))
     }
