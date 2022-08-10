@@ -36,12 +36,15 @@ export class CzytacVerb extends Verb {
             return this.verb
 
         const suffix = {
-            'on': 'a',
             'ja': 'am',
             'ty': 'asz',
+            'on': 'a',
+            'ona': 'a',
+            'ono': 'a',
             'wy': 'acie',
             'my': 'amy',
             'oni': 'ają',
+            'one': 'ają',
         }[nounType];
 
         return this.stem + suffix
@@ -68,9 +71,12 @@ export class PisacVerb extends Verb {
             'ja': 'ę',
             'ty': 'esz',
             'on': 'e',
+            'ona': 'e',
+            'ono': 'e',
             'my': 'emy',
             'wy': 'ecie',
             'oni': 'ą',
+            'one': 'ą',
         }[nounType];
 
         return this.stem + suffix
@@ -98,9 +104,12 @@ export class MowicVerb extends Verb {
             'ja': 'ię',
             'ty': 'isz',
             'on': 'i',
+            'ona': 'i',
+            'ono': 'i',
             'my': 'imy',
             'wy': 'icie',
             'oni': 'ią',
+            'one': 'ią',
         }[nounType];
 
         return this.stem + suffix
@@ -128,9 +137,12 @@ export class UczycVerb extends Verb {
             'ja': 'ę',
             'ty': 'ysz',
             'on': 'y',
+            'ona': 'y',
+            'ono': 'y',
             'my': 'ymy',
             'wy': 'ycie',
             'oni': 'ą',
+            'one': 'ą',
         }[nounType];
 
         return this.stem + suffix
