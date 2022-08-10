@@ -96,7 +96,9 @@ export class Adjective implements IAdjective {
     static generate(): IAdjective {
         const words = [
             new Adjective('mały', 'small'),
+            new Adjective('duży', 'big'),
             new Adjective('długi', 'long'),
+            new Adjective('krótki', 'short'),
             new Adjective('kolorowy', 'colourful'),
 
             new Adjective('drogi', 'expensive'),
