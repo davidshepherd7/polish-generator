@@ -254,10 +254,10 @@ export class Pronoun implements INoun {
         const words = [
             // TODO: not sure about these genders...
             new Pronoun({ 'nom': 'on', 'acc': 'jego', 'gen': 'jego' }, 'he', 'masc', 'on'),
-            new Pronoun({ 'nom': 'ona', 'acc': 'ją', 'gen': 'jej' }, 'she', 'fem', 'on'),
-            new Pronoun({ 'nom': 'one', 'acc': 'je', 'gen': 'ich' }, 'they (non-masc.)', 'fem', 'oni'),
-            new Pronoun({ 'nom': 'oni', 'acc': 'ich', 'gen': 'ich' }, 'they (any-masc.)', 'masc', 'oni'),
-            new Pronoun({ 'nom': 'ono', 'acc': 'je', 'gen': 'jego' }, 'it', 'neut', 'on'),
+            new Pronoun({ 'nom': 'ona', 'acc': 'ją', 'gen': 'jej' }, 'she', 'fem', 'ona'),
+            new Pronoun({ 'nom': 'one', 'acc': 'je', 'gen': 'ich' }, 'they (non-masc.)', 'fem', 'one'),
+            new Pronoun({ 'nom': 'oni', 'acc': 'ich', 'gen': 'ich' }, 'they (masc)', 'masc', 'oni'),
+            new Pronoun({ 'nom': 'ono', 'acc': 'je', 'gen': 'jego' }, 'it', 'neut', 'ono'),
             new Pronoun({ 'nom': 'ja', 'acc': 'mnie', 'gen': 'mnie' }, 'I', 'neut', 'ja'),
             new Pronoun({ 'nom': 'ty', 'acc': 'ciebie', 'gen': 'ciebie' }, 'you (sing.)', 'neut', 'ty'),
             new Pronoun({ 'nom': 'wy', 'acc': 'was', 'gen': 'was' }, 'you (pl.)', 'neut', 'wy'),
