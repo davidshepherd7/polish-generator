@@ -1,6 +1,7 @@
 (function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Adjective = void 0;
 var core_1 = require("./core");
 var _ = require("lodash");
 var Adjective = /** @class */ (function () {
@@ -111,14 +112,27 @@ exports.Adjective = Adjective;
 
 },{"./core":2,"lodash":8}],2:[function(require,module,exports){
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
     return result;
-}
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.assertNotNil = exports.assertNever = exports.chopSuffix = void 0;
 var _ = __importStar(require("lodash"));
 function chopSuffix(word, target) {
     if (_.endsWith(word, target))
@@ -166,14 +180,27 @@ toggleTranslation(false);
 
 },{"./phrases":5}],4:[function(require,module,exports){
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
     return result;
-}
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Name = exports.Pronoun = exports.Noun = void 0;
 var _ = __importStar(require("lodash"));
 var core_1 = require("./core");
 function stem(word) {
@@ -197,6 +224,7 @@ function mascFemAccusative(word) {
     // some weird masc words act like feminine ones
     if (_.endsWith(word, 'a'))
         return core_1.chopSuffix(word, 'a') + 'ę';
+    // Masc
     else if (_.endsWith(word, 't'))
         return word + 'a';
     else if (_.endsWith(word, 's'))
@@ -211,6 +239,7 @@ function mascFemAccusative(word) {
         return word + 'y';
     else if (_.endsWith(word, 'g'))
         return word;
+    // Most irregular examples seem to be just the normal word
     else
         return word;
 }
@@ -419,19 +448,30 @@ exports.Name = Name;
 },{"./core":2,"lodash":8}],5:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
-}
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Sentence = exports.NounPhrase = void 0;
 var core_1 = require("./core");
 var verbs_1 = require("./verbs");
 var adjectives_1 = require("./adjectives");
@@ -461,31 +501,31 @@ var StandardNounPhrase = /** @class */ (function (_super) {
     }
     StandardNounPhrase.prototype.render = function (grammaticalCase) {
         var _this = this;
-        return this.descriptiveAdjectives.map(function (a) { return a.render(_this.noun.gender, grammaticalCase); }).concat([
+        return __spreadArrays(this.descriptiveAdjectives.map(function (a) { return a.render(_this.noun.gender, grammaticalCase); }), [
             this.noun.render(grammaticalCase)
         ], (this.possesive ? [this.possesive.render()] : [])).join(' ');
     };
     Object.defineProperty(StandardNounPhrase.prototype, "translation", {
         get: function () {
-            return (this.possesive ? [this.possesive.translation] : []).concat(this.descriptiveAdjectives.map(function (a) { return a.translation; }), [
+            return __spreadArrays((this.possesive ? [this.possesive.translation] : []), this.descriptiveAdjectives.map(function (a) { return a.translation; }), [
                 this.noun.translation,
             ]).join(' ');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(StandardNounPhrase.prototype, "gender", {
         get: function () {
             return this.noun.gender;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(StandardNounPhrase.prototype, "nounType", {
         get: function () {
             return this.noun.nounType;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     StandardNounPhrase.generate = function () {
@@ -506,7 +546,7 @@ var Sentence = /** @class */ (function () {
         get: function () {
             return this.phrase.translation;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Sentence.generate = function () {
@@ -537,7 +577,7 @@ var NominativePhrase = /** @class */ (function () {
                 this.verb.translation,
             ].join(' ');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     NominativePhrase.generate = function () {
@@ -567,7 +607,7 @@ var SubjectObjectPhrase = /** @class */ (function () {
                 this.objectP.translation,
             ].join(' ');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     SubjectObjectPhrase.generate = function () {
@@ -579,6 +619,7 @@ var SubjectObjectPhrase = /** @class */ (function () {
 },{"./adjectives":1,"./core":2,"./nouns":4,"./possessive":6,"./verbs":7,"lodash":8}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Possessive = void 0;
 var core_1 = require("./core");
 var nouns_1 = require("./nouns");
 var _ = require("lodash");
@@ -593,7 +634,7 @@ var Possessive = /** @class */ (function () {
         get: function () {
             return this.owner.translation + "'s";
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Possessive.generate = function () {
@@ -608,9 +649,12 @@ exports.Possessive = Possessive;
 },{"./core":2,"./nouns":4,"lodash":8}],7:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -619,8 +663,9 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
-}
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.UczycVerb = exports.MowicVerb = exports.PisacVerb = exports.CzytacVerb = exports.Verb = void 0;
 var core_1 = require("./core");
 var lodash_1 = __importDefault(require("lodash"));
 var Verb = /** @class */ (function () {
@@ -651,7 +696,7 @@ var CzytacVerb = /** @class */ (function (_super) {
         get: function () {
             return core_1.chopSuffix(this.verb, 'ać');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     CzytacVerb.prototype.render = function (nounType) {
@@ -685,7 +730,7 @@ var PisacVerb = /** @class */ (function (_super) {
         get: function () {
             return core_1.chopSuffix(this.verb, 'ać') + 'z';
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     PisacVerb.prototype.render = function (nounType) {
@@ -719,7 +764,7 @@ var MowicVerb = /** @class */ (function (_super) {
         get: function () {
             return core_1.chopSuffix(this.verb, 'ić');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     MowicVerb.prototype.render = function (nounType) {
@@ -753,7 +798,7 @@ var UczycVerb = /** @class */ (function (_super) {
         get: function () {
             return core_1.chopSuffix(this.verb, 'yć');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     UczycVerb.prototype.render = function (nounType) {
